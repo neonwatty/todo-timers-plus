@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Backend (Ruby on Rails 8)
 - **Framework**: Ruby on Rails 8 with built-in authentication
-- **Database**: PostgreSQL (production), SQLite (development)
+- **Database**: SQLite3 (all environments)
 - **Core Models**: Timer model tracks `user_id`, `task_name`, `start_time`, `end_time`, `duration`, `tags`
 
 ### Frontend

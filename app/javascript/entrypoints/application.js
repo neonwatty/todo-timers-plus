@@ -1,28 +1,84 @@
-// To see this message, add the following to the `<head>` section in your
-// views/layouts/application.html.erb
-//
-//    <%= vite_client_tag %>
-//    <%= vite_javascript_tag 'application' %>
-console.log('Vite ⚡️ Rails')
+// Import CSS
+import './application.css'
 
-// If using a TypeScript entrypoint file:
-//     <%= vite_typescript_tag 'application' %>
-//
-// If you want to use .jsx or .tsx, add the extension:
-//     <%= vite_javascript_tag 'application.jsx' %>
+// Import Hotwire
+import '@hotwired/turbo-rails'
 
-console.log('Visit the guide for more information: ', 'https://vite-ruby.netlify.app/guide/rails')
+// Timer functionality
+class TimerManager {
+  constructor() {
+    this.timers = new Map()
+    this.init()
+  }
 
-// Example: Load Rails libraries in Vite.
-//
-// import * as Turbo from '@hotwired/turbo'
-// Turbo.start()
-//
-// import ActiveStorage from '@rails/activestorage'
-// ActiveStorage.start()
-//
-// // Import all channels.
-// const channels = import.meta.globEager('./**/*_channel.js')
+  init() {
+    this.startTimerUpdates()
+    this.bindEvents()
+  }
 
-// Example: Import a stylesheet in app/frontend/index.css
-// import '~/index.css'
+  startTimerUpdates() {
+    setInterval(() => {
+      document.querySelectorAll('[data-timer-id]').forEach(element => {
+        const timerId = element.dataset.timerId
+        const status = element.dataset.timerStatus
+        const startTime = element.dataset.timerStartTime
+        
+        if (status === 'running' && startTime) {
+          this.updateTimerDisplay(element, startTime)
+        }
+      })
+    }, 1000)
+  }
+
+  updateTimerDisplay(element, startTime) {
+    const start = new Date(startTime)
+    const now = new Date()
+    const elapsed = Math.floor((now - start) / 1000)
+    
+    const hours = Math.floor(elapsed / 3600)
+    const minutes = Math.floor((elapsed % 3600) / 60)
+    const seconds = elapsed % 60
+    
+    const display = hours > 0 
+      ? `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+      : `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+    
+    const displayElement = element.querySelector('.timer-display')
+    if (displayElement) {
+      displayElement.textContent = display
+    }
+  }
+
+  bindEvents() {
+    // Handle timer control buttons
+    document.addEventListener('click', (e) => {
+      if (e.target.matches('[data-timer-action]')) {
+        const action = e.target.dataset.timerAction
+        const timerId = e.target.dataset.timerId
+        this.handleTimerAction(action, timerId)
+      }
+    })
+  }
+
+  handleTimerAction(action, timerId) {
+    // Actions are handled by Rails forms, but we can add client-side feedback
+    const timerElement = document.querySelector(`[data-timer-id="${timerId}"]`)
+    if (timerElement) {
+      // Add visual feedback
+      timerElement.style.opacity = '0.7'
+      setTimeout(() => {
+        timerElement.style.opacity = '1'
+      }, 200)
+    }
+  }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  new TimerManager()
+})
+
+// Reinitialize on Turbo visits
+document.addEventListener('turbo:load', () => {
+  new TimerManager()
+})

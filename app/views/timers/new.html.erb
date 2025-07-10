@@ -1,2 +1,62 @@
-<h1>Timers#new</h1>
-<p>Find me in app/views/timers/new.html.erb</p>
+<% content_for :page_title, "New Timer" %>
+<% content_for :page_description, "Create a new timer to track your time" %>
+
+<div class="bg-white shadow rounded-lg p-6 max-w-2xl mx-auto">
+  <%= form_with model: @timer, local: true, class: "space-y-6" do |form| %>
+    <% if @timer.errors.any? %>
+      <div class="rounded-md bg-danger-50 p-4">
+        <div class="text-sm text-danger-700">
+          <ul class="list-disc list-inside space-y-1">
+            <% @timer.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    <% end %>
+
+    <div>
+      <%= form.label :task_name, class: "block text-sm font-medium text-gray-700 mb-2" do %>
+        Task Name
+        <span class="text-danger-500">*</span>
+      <% end %>
+      <%= form.text_field :task_name, 
+          class: "form-input",
+          placeholder: "e.g., Work on project proposal",
+          required: true %>
+      <p class="mt-1 text-sm text-gray-500">
+        Give your timer a descriptive name so you can track what you worked on.
+      </p>
+    </div>
+
+    <div>
+      <%= form.label :tags, class: "block text-sm font-medium text-gray-700 mb-2" do %>
+        Tags
+        <span class="text-gray-400">(Optional)</span>
+      <% end %>
+      <%= form.text_field :tags, 
+          class: "form-input",
+          placeholder: "e.g., work, project, client-abc" %>
+      <p class="mt-1 text-sm text-gray-500">
+        Separate multiple tags with commas. Use tags to categorize and filter your timers.
+      </p>
+    </div>
+
+    <div class="bg-gray-50 rounded-lg p-4">
+      <h3 class="text-sm font-medium text-gray-900 mb-2">ℹ️ Getting Started</h3>
+      <ul class="text-sm text-gray-600 space-y-1">
+        <li>• Create your timer with a descriptive task name</li>
+        <li>• Once created, you can start, pause, and stop the timer</li>
+        <li>• Use tags to organize related tasks together</li>
+        <li>• Track your productivity in the dashboard</li>
+      </ul>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-3">
+      <%= form.submit "Create Timer", class: "btn-primary" %>
+      <%= link_to timers_path, class: "btn-secondary" do %>
+        Cancel
+      <% end %>
+    </div>
+  <% end %>
+</div>

@@ -1,11 +1,43 @@
-<%= tag.div(flash[:alert], style: "color:red") if flash[:alert] %>
-<%= tag.div(flash[:notice], style: "color:green") if flash[:notice] %>
+<div class="space-y-6">
+  <div class="text-center">
+    <h2 class="text-2xl font-bold text-gray-900">Sign in to your account</h2>
+    <p class="mt-2 text-sm text-gray-600">
+      Start tracking your time and boost your productivity
+    </p>
+  </div>
 
-<%= form_with url: session_path do |form| %>
-  <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address] %><br>
-  <%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "Enter your password", maxlength: 72 %><br>
-  <%= form.submit "Sign in" %>
-<% end %>
-<br>
+  <%= form_with url: session_path, local: true, class: "space-y-6" do |form| %>
+    <div>
+      <%= form.label :email_address, "Email address", class: "block text-sm font-medium text-gray-700" %>
+      <div class="mt-1">
+        <%= form.email_field :email_address, 
+            required: true, 
+            autofocus: true, 
+            autocomplete: "username", 
+            placeholder: "Enter your email address", 
+            value: params[:email_address],
+            class: "form-input" %>
+      </div>
+    </div>
 
-<%= link_to "Forgot password?", new_password_path %>
+    <div>
+      <%= form.label :password, "Password", class: "block text-sm font-medium text-gray-700" %>
+      <div class="mt-1">
+        <%= form.password_field :password, 
+            required: true, 
+            autocomplete: "current-password", 
+            placeholder: "Enter your password", 
+            maxlength: 72,
+            class: "form-input" %>
+      </div>
+    </div>
+
+    <div>
+      <%= form.submit "Sign in", class: "btn-primary w-full" %>
+    </div>
+  <% end %>
+
+  <div class="text-center">
+    <%= link_to "Forgot your password?", new_password_path, class: "text-sm text-primary-600 hover:text-primary-500" %>
+  </div>
+</div>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html class="h-full bg-gray-50">
   <head>
-    <title><%= content_for(:title) || "Todo Timers Plus" %></title>
+    <title><%= content_for(:title) || "Todo Timers+" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
@@ -10,31 +10,109 @@
 
     <%= yield :head %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
     <%= vite_client_tag %>
     <%= vite_javascript_tag 'application' %>
-    <!--
-      If using a TypeScript entrypoint file:
-        vite_typescript_tag 'application'
-
-      If using a .jsx or .tsx entrypoint, add the extension:
-        vite_javascript_tag 'application.jsx'
-
-      Visit the guide for more information: https://vite-ruby.netlify.app/guide/rails
-    -->
-
+    <%= vite_stylesheet_tag 'application' %>
   </head>
 
-  <body>
-    <%= yield %>
+  <body class="h-full">
+    <% if Current.user %>
+      <div class="min-h-full">
+        <!-- Mobile header -->
+        <div class="bg-primary-600 pb-32">
+          <nav class="bg-primary-600">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <div class="flex h-16 items-center justify-between">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0">
+                    <%= link_to root_path, class: "text-white font-bold text-xl" do %>
+                      ⏱️ Todo Timers+
+                    <% end %>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                  <%= link_to timers_path, class: "text-primary-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium" do %>
+                    Timers
+                  <% end %>
+                  <%= link_to dashboard_path, class: "text-primary-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium" do %>
+                    Dashboard
+                  <% end %>
+                  <%= button_to session_path, method: :delete, 
+                      class: "text-primary-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium bg-transparent border-0",
+                      form_class: "inline" do %>
+                    Sign Out
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </nav>
+          
+          <!-- Page header -->
+          <div class="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
+            <div class="text-center">
+              <h1 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                <%= content_for(:page_title) || "Dashboard" %>
+              </h1>
+              <% if content_for?(:page_description) %>
+                <p class="mt-4 text-lg text-primary-200">
+                  <%= content_for(:page_description) %>
+                </p>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Page content -->
+        <main class="-mt-32">
+          <div class="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
+            <!-- Flash messages -->
+            <% if notice %>
+              <div class="mb-4 rounded-md bg-success-50 p-4">
+                <div class="text-sm text-success-700"><%= notice %></div>
+              </div>
+            <% end %>
+            <% if alert %>
+              <div class="mb-4 rounded-md bg-danger-50 p-4">
+                <div class="text-sm text-danger-700"><%= alert %></div>
+              </div>
+            <% end %>
+            
+            <%= yield %>
+          </div>
+        </main>
+      </div>
+    <% else %>
+      <!-- Unauthenticated layout -->
+      <div class="min-h-full bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div class="sm:mx-auto sm:w-full sm:max-w-md">
+          <div class="text-center">
+            <h1 class="text-3xl font-bold text-gray-900">⏱️ Todo Timers+</h1>
+            <p class="mt-2 text-sm text-gray-600">Track your time, boost your productivity</p>
+          </div>
+        </div>
+        
+        <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+          <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            <% if notice %>
+              <div class="mb-4 rounded-md bg-success-50 p-4">
+                <div class="text-sm text-success-700"><%= notice %></div>
+              </div>
+            <% end %>
+            <% if alert %>
+              <div class="mb-4 rounded-md bg-danger-50 p-4">
+                <div class="text-sm text-danger-700"><%= alert %></div>
+              </div>
+            <% end %>
+            
+            <%= yield %>
+          </div>
+        </div>
+      </div>
+    <% end %>
   </body>
 </html>

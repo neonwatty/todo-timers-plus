@@ -1,2 +1,158 @@
-<h1>Timers#index</h1>
-<p>Find me in app/views/timers/index.html.erb</p>
+<% content_for :page_title, "All Timers" %>
+<% content_for :page_description, "Manage and track your time entries" %>
+
+<!-- Header actions -->
+<div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+  <div>
+    <h2 class="text-xl font-semibold text-gray-900">Your Timers</h2>
+    <p class="text-sm text-gray-600">Total: <%= @timers.count %> timers</p>
+  </div>
+  <div class="mt-4 sm:mt-0">
+    <%= link_to new_timer_path, class: "btn-primary" do %>
+      ➕ New Timer
+    <% end %>
+  </div>
+</div>
+
+<!-- Active timers section -->
+<% if @active_timers.any? %>
+  <div class="mb-8">
+    <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+      ▶️ Active Timers
+      <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-100 text-success-800">
+        <%= @active_timers.count %>
+      </span>
+    </h3>
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <% @active_timers.each do |timer| %>
+        <div class="timer-card" data-timer-id="<%= timer.id %>" data-timer-status="<%= timer.status %>" data-timer-start-time="<%= timer.start_time&.iso8601 %>">
+          <div class="flex items-start justify-between">
+            <div class="flex-1">
+              <h4 class="text-lg font-medium text-gray-900 mb-2"><%= timer.task_name %></h4>
+              <div class="timer-display text-2xl font-mono text-primary-600 mb-3">
+                <%= timer.formatted_duration %>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                  <%= timer.running? ? 'bg-success-100 text-success-800' : 'bg-warning-100 text-warning-800' %>">
+                  <%= timer.status.capitalize %>
+                </span>
+                <span class="text-xs text-gray-500">
+                  Started <%= time_ago_in_words(timer.start_time) %> ago
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-4 flex space-x-2">
+            <% if timer.running? %>
+              <%= button_to pause_timer_path(timer), method: :patch, class: "btn-warning btn-sm flex-1",
+                  data: { timer_action: "pause", timer_id: timer.id } do %>
+                ⏸️ Pause
+              <% end %>
+            <% elsif timer.paused? %>
+              <%= button_to resume_timer_path(timer), method: :patch, class: "btn-success btn-sm flex-1",
+                  data: { timer_action: "resume", timer_id: timer.id } do %>
+                ▶️ Resume
+              <% end %>
+            <% end %>
+            <%= button_to stop_timer_path(timer), method: :patch, class: "btn-danger btn-sm flex-1",
+                data: { timer_action: "stop", timer_id: timer.id } do %>
+              ⏹️ Stop
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<!-- All timers list -->
+<div class="bg-white shadow rounded-lg">
+  <div class="px-6 py-4 border-b border-gray-200">
+    <h3 class="text-lg font-medium text-gray-900">All Timers</h3>
+  </div>
+  
+  <% if @timers.any? %>
+    <div class="divide-y divide-gray-200">
+      <% @timers.each do |timer| %>
+        <div class="p-6 hover:bg-gray-50">
+          <div class="flex items-center justify-between">
+            <div class="flex-1">
+              <div class="flex items-center space-x-3">
+                <%= link_to timer_path(timer), class: "text-lg font-medium text-gray-900 hover:text-primary-600" do %>
+                  <%= timer.task_name %>
+                <% end %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                  <%= case timer.status
+                      when 'running' then 'bg-success-100 text-success-800'
+                      when 'paused' then 'bg-warning-100 text-warning-800'
+                      when 'stopped', 'completed' then 'bg-gray-100 text-gray-800'
+                      end %>">
+                  <%= timer.status.capitalize %>
+                </span>
+              </div>
+              
+              <div class="mt-2 flex items-center space-x-4 text-sm text-gray-500">
+                <span class="font-mono font-medium text-gray-900">
+                  <%= timer.formatted_duration %>
+                </span>
+                <span>
+                  Created <%= time_ago_in_words(timer.created_at) %> ago
+                </span>
+                <% if timer.start_time %>
+                  <span>
+                    Started <%= timer.start_time.strftime("%b %d, %Y at %I:%M %p") %>
+                  </span>
+                <% end %>
+              </div>
+            </div>
+            
+            <div class="flex items-center space-x-2">
+              <% unless timer.status.in?(['stopped', 'completed']) %>
+                <% if timer.running? %>
+                  <%= button_to pause_timer_path(timer), method: :patch, class: "btn-warning btn-sm",
+                      data: { timer_action: "pause", timer_id: timer.id } do %>
+                    ⏸️
+                  <% end %>
+                <% elsif timer.paused? %>
+                  <%= button_to resume_timer_path(timer), method: :patch, class: "btn-success btn-sm",
+                      data: { timer_action: "resume", timer_id: timer.id } do %>
+                    ▶️
+                  <% end %>
+                <% end %>
+                <%= button_to stop_timer_path(timer), method: :patch, class: "btn-danger btn-sm",
+                    data: { timer_action: "stop", timer_id: timer.id } do %>
+                  ⏹️
+                <% end %>
+              <% else %>
+                <%= button_to start_timer_path(timer), method: :patch, class: "btn-success btn-sm",
+                    data: { timer_action: "start", timer_id: timer.id } do %>
+                  ▶️ Start
+                <% end %>
+              <% end %>
+              
+              <%= link_to edit_timer_path(timer), class: "btn-secondary btn-sm" do %>
+                ✏️
+              <% end %>
+              
+              <%= button_to timer_path(timer), method: :delete, class: "btn-danger btn-sm",
+                  data: { confirm: "Are you sure you want to delete this timer?" } do %>
+                🗑️
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="text-center py-12">
+      <div class="text-6xl mb-4">⏱️</div>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">No timers yet</h3>
+      <p class="text-gray-500 mb-6">Create your first timer to start tracking your time!</p>
+      <%= link_to new_timer_path, class: "btn-primary" do %>
+        ➕ Create First Timer
+      <% end %>
+    </div>
+  <% end %>
+</div>
