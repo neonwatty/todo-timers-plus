@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.10",
+    "autoprefixer": "^10.4.21",
+    "tailwindcss": "^4.1.11",
+    "vite": "^5.4.19",
+    "vite-plugin-ruby": "^5.1.1"
+  }
+}

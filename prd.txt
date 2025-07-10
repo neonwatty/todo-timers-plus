@@ -1,0 +1,131 @@
+## 📝 Product Requirements Document (PRD)
+
+### 1. Overview
+
+**App Name**: *Todo Timers+*
+
+**Purpose**:
+A mobile-friendly personal productivity tool to help users manage, track, and analyze time spent on tasks through customizable "todo timers."
+
+**Target Users**:
+
+* Time-conscious individuals
+* Freelancers and remote workers
+* People using Pomodoro-style techniques or timeboxing
+
+---
+
+### 2. Goals
+
+* Enable creation and tracking of multiple "todo timers"
+* Support mobile-first usage and responsive design
+* Track repeated tasks and visualize patterns over time
+* Provide beautiful, actionable analytics
+* Ensure data is persisted and securely tied to a user account
+
+---
+
+### 3. Core Features
+
+#### 🕒 Todo Timers
+
+* Create timers with optional labels/notes
+* Start, pause, and stop timers
+* Timers persist across reloads/sessions
+* Categorization via tags or groups
+
+#### ♻ Repeated Task Tracking
+
+* Auto-detect common tasks
+* Suggest based on prior usage
+* Save “timer templates” for quick reuse
+
+#### 📊 Analytics & Insights
+
+* Total time per task
+* Average session duration
+* Session streaks and frequency charts
+* Calendar view of timer history
+* Task-based heatmaps, line graphs, and summaries
+
+#### 🔔 Notifications & Reminders
+
+* Desktop and mobile notifications for timer limits or inactivity
+* Daily/weekly reminders to start common tasks
+
+#### ⏲ Pomodoro & Countdown Modes
+
+* Configurable Pomodoro timer (25m/5m intervals)
+* Fixed-duration countdown timers
+* Switch modes on a per-task basis
+
+#### 🎖 Gamification
+
+* Badges for consistency or time spent
+* Task leveling (XP for repeated work)
+
+#### 📂 Export & Backup
+
+* CSV/JSON export for personal data backup
+* Future-proofing for cloud sync (e.g., Firebase or GitHub gists)
+
+#### 🧠 Smart Suggestions
+
+* Recommend starting recurring tasks
+* Show weekly progress summaries
+
+#### 📱 Mobile-First UX
+
+* Responsive design with touch-optimized controls
+* Quick-access UI for starting/stopping tasks
+* Offline usage (via localStorage/cache if needed)
+
+---
+
+### 4. UX and UI Requirements
+
+* Built with **Tailwind CSS**, mobile-first from the start
+* Components: timer cards, task log list, analytics dashboard, charts
+* Views:
+
+  * Home (Active Timers)
+  * Task Log / History
+  * Analytics Dashboard
+  * Settings/Profile
+
+---
+
+### 5. Technical Specifications
+
+#### Frontend
+
+* **Bundler**: `ruby_vite`
+* **Framework**: Vanilla JS or light Alpine.js for reactivity
+* **Styling**: Tailwind CSS
+* **Charts**: Chart.js or ApexCharts via JS integration
+
+#### Backend
+
+* **Framework**: Ruby on Rails 8
+* **Auth**: Rails 8 built-in authentication
+* **Database**: PostgreSQL (production), SQLite (dev)
+* **Timer Model**: Tracks `user_id`, `task_name`, `start_time`, `end_time`, `duration`, `tags`
+
+#### Testing
+
+* **Unit & Integration**: Minitest
+* **System Tests**: Capybara with mobile viewport simulation
+
+---
+
+### 6. MVP Scope
+
+✅ Todo timer creation & management
+✅ User auth & task association
+✅ Session storage
+✅ Full analytics dashboard
+✅ Pomodoro & countdown modes
+✅ Notifications & smart suggestions
+✅ Gamification
+✅ Mobile-first responsive UI
+✅ Export functionality
