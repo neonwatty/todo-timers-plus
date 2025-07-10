@@ -1,5 +1,4 @@
 class DashboardController < ApplicationController
-  before_action :require_authentication
   
   def index
     @active_timers = Current.user.active_timers.limit(5)

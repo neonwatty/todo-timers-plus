@@ -13,20 +13,18 @@ module ActiveSupport
     # Add more helper methods to be used by all tests here...
     def sign_in_as(user)
       if is_a?(ActionDispatch::IntegrationTest)
-        # Create a session and set the cookie manually for integration tests
-        user_session = user.sessions.create!(
-          user_agent: "Rails Testing",
-          ip_address: "127.0.0.1"
-        )
-        # Use the built-in session mechanism for integration tests
-        cookies.signed[:session_id] = user_session.id
+        # For integration tests, use the actual sign-in flow
+        post session_url, params: { 
+          email_address: user.email_address, 
+          password: "password" 
+        }
+        follow_redirect! if response.redirect?
       else
-        # For controller tests, we need to create a session and set the cookie
+        # For controller tests, we need to create a session and set Current.session
         user_session = user.sessions.create!(
           user_agent: "Rails Testing",
           ip_address: "127.0.0.1"
         )
-        cookies.signed[:session_id] = user_session.id
         Current.session = user_session
       end
     end

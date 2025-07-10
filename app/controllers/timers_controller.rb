@@ -1,6 +1,5 @@
 class TimersController < ApplicationController
   before_action :set_timer, only: [:show, :edit, :update, :destroy, :start, :pause, :stop, :resume]
-  before_action :require_authentication
 
   def index
     @timers = Current.user.timers.order(created_at: :desc)
