@@ -15,13 +15,13 @@
       </div>
     <% end %>
 
-    <div class="space-y-2">
-      <%= form.label :task_name, class: "block text-sm font-semibold text-gray-700" do %>
+    <div class="form-group">
+      <%= form.label :task_name, class: "form-label" do %>
         Task Name
         <span class="text-red-500">*</span>
       <% end %>
       <%= form.text_field :task_name, 
-          class: "block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-150",
+          class: "form-input",
           placeholder: "e.g., Work on project proposal",
           required: true %>
       <p class="text-sm text-gray-500">
@@ -29,13 +29,13 @@
       </p>
     </div>
 
-    <div class="space-y-2">
-      <%= form.label :tags, class: "block text-sm font-semibold text-gray-700" do %>
+    <div class="form-group">
+      <%= form.label :tags, class: "form-label" do %>
         Tags
         <span class="text-gray-400 font-normal">(Optional)</span>
       <% end %>
       <%= form.text_field :tags, 
-          class: "block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-150",
+          class: "form-input",
           placeholder: "e.g., work, project, client-abc" %>
       <p class="text-sm text-gray-500">
         Separate multiple tags with commas. Use tags to categorize and filter your timers.
@@ -68,8 +68,8 @@
     </div>
 
     <div class="flex flex-col sm:flex-row gap-3 pt-2">
-      <%= form.submit "Create Timer", class: "inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg shadow-sm hover:bg-blue-700 hover:shadow-md transition-all duration-150 cursor-pointer" %>
-      <%= link_to timers_path, class: "inline-flex items-center justify-center px-6 py-3 bg-white text-gray-700 font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition-all duration-150" do %>
+      <%= form.submit "Create Timer", class: "btn-primary btn-lg" %>
+      <%= link_to timers_path, class: "btn-secondary btn-lg" do %>
         Cancel
       <% end %>
     </div>

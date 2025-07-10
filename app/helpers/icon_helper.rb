@@ -3,7 +3,20 @@ module IconHelper
     size = options.delete(:size) || 5
     css_class = options.delete(:class) || ""
     
-    svg_class = "w-#{size} h-#{size} #{css_class}"
+    # Map size to static Tailwind classes to ensure they're included in build
+    size_class = case size
+    when 3 then "w-3 h-3"
+    when 4 then "w-4 h-4"
+    when 5 then "w-5 h-5"
+    when 6 then "w-6 h-6"
+    when 7 then "w-7 h-7"
+    when 8 then "w-8 h-8"
+    when 10 then "w-10 h-10"
+    when 12 then "w-12 h-12"
+    else "w-5 h-5"
+    end
+    
+    svg_class = "#{size_class} #{css_class}"
     
     case name
     when :clock

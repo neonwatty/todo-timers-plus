@@ -116,7 +116,7 @@
   <!-- Time distribution chart -->
   <div class="bg-white shadow rounded-lg p-6">
     <h3 class="text-lg font-medium text-gray-900 mb-4">Time Distribution</h3>
-    <div class="h-64">
+    <div class="h-64 sm:h-80 md:h-64">
       <% 
         case @period
         when 'day'
@@ -144,7 +144,7 @@
   <% if @analytics[:top_tasks].present? && @analytics[:top_tasks].any? %>
     <div class="bg-white shadow rounded-lg p-6">
       <h3 class="text-lg font-medium text-gray-900 mb-4">Top Tasks</h3>
-      <div class="h-64">
+      <div class="h-64 sm:h-80 md:h-64">
         <% 
           chart_data = {
             labels: @analytics[:top_tasks].map { |task, _| task },

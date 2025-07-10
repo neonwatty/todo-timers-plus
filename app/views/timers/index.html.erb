@@ -9,7 +9,7 @@
       <p class="mt-1 text-gray-600">You have <%= @timers.count %> <%= 'timer'.pluralize(@timers.count) %> in total</p>
     </div>
     <div class="mt-4 sm:mt-0">
-      <%= link_to new_timer_path, class: "inline-flex items-center justify-center px-5 py-2.5 bg-blue-600 text-white font-medium rounded-lg shadow-sm hover:bg-blue-700 hover:shadow-md transition-all duration-150" do %>
+      <%= link_to new_timer_path, class: "btn-primary" do %>
         <%= icon_with_text :plus, "New Timer", icon: { size: 4 } %>
       <% end %>
     </div>
@@ -28,7 +28,7 @@
         <%= @active_timers.count %> <%= 'timer'.pluralize(@active_timers.count) %>
       </span>
     </div>
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
       <% @active_timers.each do |timer| %>
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all duration-200" data-timer-id="<%= timer.id %>" data-timer-status="<%= timer.status %>" data-timer-start-time="<%= timer.start_time&.iso8601 %>">
           <div class="flex items-start justify-between mb-4">

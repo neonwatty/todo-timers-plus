@@ -11,20 +11,20 @@
 
   <%= form_with url: session_path, local: true, class: "space-y-6", data: { turbo: false } do |form| %>
     <div class="space-y-4">
-      <div class="space-y-2">
-        <%= form.label :email_address, "Email address", class: "block text-sm font-semibold text-gray-700" %>
+      <div class="form-group">
+        <%= form.label :email_address, "Email address", class: "form-label" %>
         <%= form.email_field :email_address, 
             required: true, 
             autofocus: true, 
             autocomplete: "username", 
             placeholder: "you@example.com", 
             value: params[:email_address],
-            class: "block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-150" %>
+            class: "form-input" %>
       </div>
 
-      <div class="space-y-2">
+      <div class="form-group">
         <div class="flex items-center justify-between">
-          <%= form.label :password, "Password", class: "block text-sm font-semibold text-gray-700" %>
+          <%= form.label :password, "Password", class: "form-label" %>
           <%= link_to "Forgot password?", new_password_path, class: "text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors" %>
         </div>
         <%= form.password_field :password, 
@@ -32,7 +32,7 @@
             autocomplete: "current-password", 
             placeholder: "••••••••", 
             maxlength: 72,
-            class: "block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-150" %>
+            class: "form-input" %>
       </div>
 
       <div class="flex items-center">
@@ -44,7 +44,7 @@
     </div>
 
     <div>
-      <%= form.submit "Sign in", class: "w-full inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium text-lg rounded-lg shadow-sm hover:bg-blue-700 hover:shadow-md transition-all duration-150 cursor-pointer", data: { disable_with: "Signing in..." } %>
+      <%= form.submit "Sign in", class: "btn-primary btn-lg w-full", data: { disable_with: "Signing in..." } %>
     </div>
   <% end %>
 
