@@ -36,13 +36,15 @@ class User < ApplicationRecord
   end
 
   def analytics_data(period = :week)
-    case period
-    when :week
+    case period.to_s
+    when 'week'
       weekly_analytics
-    when :month
+    when 'month'
       monthly_analytics
-    else
+    when 'day'
       daily_analytics
+    else
+      weekly_analytics
     end
   end
 

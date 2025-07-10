@@ -1,0 +1,11 @@
+# Sessions for testing authentication
+
+one:
+  user: one
+  user_agent: "Rails Testing Browser"
+  ip_address: "127.0.0.1"
+
+two:
+  user: two
+  user_agent: "Rails Testing Browser"
+  ip_address: "127.0.0.1"

@@ -8,6 +8,7 @@ class Timer < ApplicationRecord
   validates :duration, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 
   before_validation :set_default_status, on: :create
+  after_save :create_tag_associations, if: :saved_change_to_tags?
 
   scope :active, -> { where(status: ['running', 'paused']) }
   scope :completed, -> { where(status: ['stopped', 'completed']) }
@@ -93,5 +94,19 @@ class Timer < ApplicationRecord
 
   def set_default_status
     self.status ||= 'pending'
+  end
+
+  def create_tag_associations
+    return if self[:tags].blank?
+    
+    # Clear existing tags
+    timer_tags.destroy_all
+    
+    # Create new tag associations
+    tag_names = self[:tags].split(',').map(&:strip).map(&:downcase).uniq
+    tag_names.each do |tag_name|
+      tag = Tag.find_or_create_by(name: tag_name)
+      timer_tags.create(tag: tag)
+    end
   end
 end

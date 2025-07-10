@@ -17,6 +17,7 @@ class TimersController < ApplicationController
   def create
     @timer = Current.user.timers.build(timer_params)
     @timer.status = 'stopped'
+    @timer[:tags] = params[:timer][:tags] if params[:timer][:tags].present?
     
     if @timer.save
       redirect_to @timer, notice: 'Timer was successfully created.'
@@ -29,6 +30,8 @@ class TimersController < ApplicationController
   end
 
   def update
+    @timer[:tags] = params[:timer][:tags] if params[:timer].has_key?(:tags)
+    
     if @timer.update(timer_params)
       redirect_to @timer, notice: 'Timer was successfully updated.'
     else
@@ -98,6 +101,6 @@ class TimersController < ApplicationController
   end
 
   def timer_params
-    params.require(:timer).permit(:task_name, :tags)
+    params.require(:timer).permit(:task_name)
   end
 end
