@@ -2,8 +2,12 @@ class User < ApplicationRecord
   has_secure_password
   has_many :sessions, dependent: :destroy
   has_many :timers, dependent: :destroy
+  has_many :tags, -> { distinct }, through: :timers
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
+
+  validates :email_address, presence: true, uniqueness: true,
+            format: { with: /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i }
 
   def active_timers
     timers.active
@@ -12,6 +16,23 @@ class User < ApplicationRecord
   def total_time_today
     timers.where(created_at: Date.current.beginning_of_day..Date.current.end_of_day)
           .sum(&:calculate_duration)
+  end
+
+  def total_time_tracked
+    timers.sum(:duration)
+  end
+
+  def timer_stats
+    {
+      total_timers: timers.count,
+      active_timers: timers.active.count,
+      completed_timers: timers.completed.count,
+      total_duration: timers.sum(:duration)
+    }
+  end
+
+  def timers_by_date_range(start_date, end_date)
+    timers.by_date_range(start_date, end_date)
   end
 
   def analytics_data(period = :week)
@@ -44,11 +65,7 @@ class User < ApplicationRecord
           task_count: day_timers.count
         }
       end.reverse,
-      top_tasks: timers.by_date_range(start_date, end_date)
-                       .group(:task_name)
-                       .sum(&:calculate_duration)
-                       .sort_by { |_, duration| -duration }
-                       .first(5)
+      top_tasks: calculate_top_tasks(start_date, end_date)
     }
   end
 
@@ -69,7 +86,8 @@ class User < ApplicationRecord
           total_duration: week_timers.sum(&:calculate_duration),
           task_count: week_timers.count
         }
-      end.reverse
+      end.reverse,
+      top_tasks: calculate_top_tasks(start_date, end_date)
     }
   end
 
@@ -89,7 +107,19 @@ class User < ApplicationRecord
           total_duration: hour_timers.sum(&:calculate_duration),
           task_count: hour_timers.count
         }
-      end
+      end,
+      top_tasks: calculate_top_tasks(Date.current.beginning_of_day, Date.current.end_of_day)
     }
+  end
+
+  def calculate_top_tasks(start_date, end_date)
+    timer_data = timers.by_date_range(start_date, end_date)
+    
+    task_durations = Hash.new(0)
+    timer_data.each do |timer|
+      task_durations[timer.task_name] += timer.calculate_duration
+    end
+    
+    task_durations.sort_by { |_, duration| -duration }.first(5)
   end
 end

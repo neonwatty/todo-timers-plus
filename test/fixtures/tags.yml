@@ -1,9 +1,33 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  name: MyString
-  color: MyString
+work:
+  name: work
+  color: blue
 
-two:
-  name: MyString
-  color: MyString
+project:
+  name: project
+  color: green
+
+meeting:
+  name: meeting
+  color: purple
+
+learning:
+  name: learning
+  color: orange
+
+client:
+  name: client
+  color: red
+
+documentation:
+  name: documentation
+  color: gray
+
+review:
+  name: review
+  color: pink
+
+code:
+  name: code
+  color: cyan

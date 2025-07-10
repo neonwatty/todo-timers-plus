@@ -1,19 +1,33 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
+running_timer:
   user: one
-  task_name: MyString
-  start_time: 2025-07-09 19:06:24
-  end_time: 2025-07-09 19:06:24
-  duration: 1
-  tags: MyText
-  status: MyString
+  task_name: "Working on project"
+  start_time: <%= 1.hour.ago %>
+  end_time: null
+  duration: null
+  status: "running"
 
-two:
+paused_timer:
+  user: one
+  task_name: "Reading documentation"
+  start_time: <%= 2.hours.ago %>
+  end_time: null
+  duration: 1800
+  status: "paused"
+
+completed_timer:
+  user: one
+  task_name: "Meeting with client"
+  start_time: <%= 3.hours.ago %>
+  end_time: <%= 2.hours.ago %>
+  duration: 3600
+  status: "completed"
+
+stopped_timer:
   user: two
-  task_name: MyString
-  start_time: 2025-07-09 19:06:24
-  end_time: 2025-07-09 19:06:24
-  duration: 1
-  tags: MyText
-  status: MyString
+  task_name: "Code review"
+  start_time: <%= 4.hours.ago %>
+  end_time: <%= 3.hours.ago %>
+  duration: 3600
+  status: "stopped"

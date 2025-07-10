@@ -1,9 +1,33 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  timer: one
-  tag: one
+running_timer_work:
+  timer: running_timer
+  tag: work
 
-two:
-  timer: two
-  tag: two
+running_timer_project:
+  timer: running_timer
+  tag: project
+
+paused_timer_learning:
+  timer: paused_timer
+  tag: learning
+
+completed_timer_meeting:
+  timer: completed_timer
+  tag: meeting
+
+completed_timer_client:
+  timer: completed_timer
+  tag: client
+
+stopped_timer_review:
+  timer: stopped_timer
+  tag: review
+
+stopped_timer_code:
+  timer: stopped_timer
+  tag: code
+
+paused_timer_documentation:
+  timer: paused_timer
+  tag: documentation
