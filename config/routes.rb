@@ -8,6 +8,7 @@ Rails.application.routes.draw do
       patch :pause
       patch :stop
       patch :resume
+      patch :reset
     end
   end
   

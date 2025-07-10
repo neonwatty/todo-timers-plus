@@ -1,2 +1,94 @@
-<h1>Timers#edit</h1>
-<p>Find me in app/views/timers/edit.html.erb</p>
+<% content_for :page_title, "Edit Timer" %>
+<% content_for :page_description, "Update your timer details" %>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 max-w-2xl mx-auto">
+  <%= form_with model: @timer, local: true, class: "space-y-6" do |form| %>
+    <% if @timer.errors.any? %>
+      <div class="rounded-md bg-red-50 p-4">
+        <div class="text-sm text-red-700">
+          <ul class="list-disc list-inside space-y-1">
+            <% @timer.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="form-group">
+      <%= form.label :task_name, class: "form-label" do %>
+        Task Name
+        <span class="text-red-500">*</span>
+      <% end %>
+      <%= form.text_field :task_name, 
+          class: "form-input",
+          placeholder: "e.g., Work on project proposal",
+          required: true %>
+    </div>
+
+    <% if @timer.countdown? %>
+      <div class="form-group">
+        <label class="form-label">Timer Type</label>
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center">
+          <%= icon :hourglass, size: 5, class: "text-blue-600 mr-3" %>
+          <div>
+            <p class="font-medium text-blue-900">Countdown Timer</p>
+            <p class="text-sm text-blue-700">Target duration: <%= Timer.format_seconds(@timer.target_duration) %></p>
+          </div>
+        </div>
+        <p class="text-sm text-gray-500 mt-2">
+          Note: You cannot change the timer type after creation. Create a new timer if you need a different type.
+        </p>
+      </div>
+    <% else %>
+      <div class="form-group">
+        <label class="form-label">Timer Type</label>
+        <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 flex items-center">
+          <%= icon :clock, size: 5, class: "text-purple-600 mr-3" %>
+          <div>
+            <p class="font-medium text-purple-900">Stopwatch Timer</p>
+            <p class="text-sm text-purple-700">Counts up from zero</p>
+          </div>
+        </div>
+        <p class="text-sm text-gray-500 mt-2">
+          Note: You cannot change the timer type after creation. Create a new timer if you need a different type.
+        </p>
+      </div>
+    <% end %>
+
+    <div class="form-group">
+      <%= form.label :tags, class: "form-label" do %>
+        Tags
+        <span class="text-gray-400 font-normal">(Optional)</span>
+      <% end %>
+      <%= form.text_field :tags, 
+          class: "form-input",
+          value: @timer[:tags],
+          placeholder: "e.g., work, project, client-abc" %>
+      <p class="text-sm text-gray-500">
+        Separate multiple tags with commas. Use tags to categorize and filter your timers.
+      </p>
+    </div>
+
+    <% if @timer.running? || @timer.paused? %>
+      <div class="bg-amber-50 border border-amber-200 rounded-lg p-4">
+        <div class="flex">
+          <%= icon :exclamation, size: 5, class: "text-amber-600 mr-3" %>
+          <div>
+            <h3 class="text-sm font-medium text-amber-900">Timer is Active</h3>
+            <p class="text-sm text-amber-700 mt-1">
+              This timer is currently <%= @timer.status %>. Some fields cannot be edited while the timer is active.
+            </p>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="flex flex-col sm:flex-row gap-3 pt-2">
+      <%= form.submit "Update Timer", class: "btn-primary btn-lg" %>
+      <%= link_to @timer, class: "btn-secondary btn-lg" do %>
+        Cancel
+      <% end %>
+    </div>
+  <% end %>
+</div>

@@ -1,6 +1,14 @@
 // Import Hotwire
 import '@hotwired/turbo-rails'
 
+// Import Stimulus
+import { Application } from "@hotwired/stimulus"
+import { registerControllers } from "stimulus-vite-helpers"
+
+const application = Application.start()
+const controllers = import.meta.glob("../controllers/**/*_controller.js", { eager: true })
+registerControllers(application, controllers)
+
 // Import Chart.js
 import Chart from 'chart.js/auto'
 
@@ -189,12 +197,14 @@ class AnalyticsManager {
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-  new TimerManager()
+  // TimerManager disabled - using Stimulus countdown_timer_controller instead
+  // new TimerManager()
   new AnalyticsManager()
 })
 
 // Reinitialize on Turbo visits
 document.addEventListener('turbo:load', () => {
-  new TimerManager()
+  // TimerManager disabled - using Stimulus countdown_timer_controller instead
+  // new TimerManager()
   new AnalyticsManager()
 })

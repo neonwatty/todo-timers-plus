@@ -89,24 +89,39 @@
       <div class="divide-y divide-gray-200">
         <% @active_timers.each do |timer| %>
           <div class="p-6 hover:bg-gray-50 transition-colors duration-150" 
-               data-timer-id="<%= timer.id %>" 
-               data-timer-status="<%= timer.status %>" 
-               data-timer-start-time="<%= timer.start_time&.iso8601 %>">
+               data-controller="countdown-timer"
+               data-countdown-timer-timer-id-value="<%= timer.id %>"
+               data-countdown-timer-status-value="<%= timer.status %>"
+               data-countdown-timer-start-time-value="<%= timer.start_time&.iso8601 %>"
+               data-countdown-timer-target-duration-value="<%= timer.target_duration || 0 %>"
+               data-countdown-timer-remaining-duration-value="<%= timer.calculate_remaining_time %>"
+               data-countdown-timer-is-countdown-value="<%= timer.countdown? %>"
+               data-countdown-timer-update-url-value="<%= timer_path(timer) %>">
             <div class="flex items-center justify-between">
               <div class="flex-1 min-w-0">
                 <h3 class="text-base font-medium text-gray-900 truncate">
                   <%= timer.task_name %>
                 </h3>
                 <div class="mt-2 flex items-center gap-4">
-                  <span class="timer-display text-2xl text-blue-600 <%= 'animate-pulse-subtle' if timer.running? %>">
+                  <span class="text-2xl <%= timer.expired? ? 'text-red-600' : 'text-blue-600' %> <%= 'animate-pulse-subtle' if timer.running? %>"
+                        data-countdown-timer-target="display">
                     <%= timer.formatted_duration %>
                   </span>
                   <% if timer.running? %>
                     <span class="badge-success">Running</span>
                   <% elsif timer.paused? %>
                     <span class="badge-warning">Paused</span>
+                  <% elsif timer.expired? %>
+                    <span class="badge-danger">Expired</span>
                   <% end %>
                 </div>
+                <% if timer.countdown? && timer.target_duration.present? %>
+                  <div class="mt-2 w-full bg-gray-200 rounded-full h-1.5">
+                    <div class="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
+                         data-countdown-timer-target="progressBar"
+                         style="width: <%= timer.progress_percentage %>%"></div>
+                  </div>
+                <% end %>
               </div>
               <div class="ml-4 flex items-center gap-2">
                 <% if timer.running? %>
@@ -123,12 +138,21 @@
                       data: { timer_action: "resume", timer_id: timer.id } do %>
                     <%= icon_with_text :play, "Resume", icon: { size: 4 } %>
                   <% end %>
+                <% elsif timer.expired? %>
+                  <%= button_to reset_timer_path(timer), 
+                      method: :patch, 
+                      class: "btn-primary btn-sm",
+                      data: { timer_action: "reset", timer_id: timer.id } do %>
+                    <%= icon_with_text :refresh, "Reset", icon: { size: 4 } %>
+                  <% end %>
                 <% end %>
-                <%= button_to stop_timer_path(timer), 
-                    method: :patch, 
-                    class: "btn-danger btn-sm",
-                    data: { timer_action: "stop", timer_id: timer.id } do %>
-                  <%= icon_with_text :stop, "Stop", icon: { size: 4 } %>
+                <% unless timer.expired? %>
+                  <%= button_to stop_timer_path(timer), 
+                      method: :patch, 
+                      class: "btn-danger btn-sm",
+                      data: { timer_action: "stop", timer_id: timer.id } do %>
+                    <%= icon_with_text :stop, "Stop", icon: { size: 4 } %>
+                  <% end %>
                 <% end %>
               </div>
             </div>

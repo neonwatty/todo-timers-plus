@@ -1,2 +1,161 @@
-<h1>Timers#show</h1>
-<p>Find me in app/views/timers/show.html.erb</p>
+<% content_for :page_title, @timer.task_name %>
+<% content_for :page_description, "Timer details and controls" %>
+
+<div class="max-w-4xl mx-auto">
+  <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8"
+       data-controller="countdown-timer"
+       data-countdown-timer-timer-id-value="<%= @timer.id %>"
+       data-countdown-timer-status-value="<%= @timer.status %>"
+       data-countdown-timer-start-time-value="<%= @timer.start_time&.iso8601 %>"
+       data-countdown-timer-target-duration-value="<%= @timer.target_duration || 0 %>"
+       data-countdown-timer-remaining-duration-value="<%= @timer.calculate_remaining_time %>"
+       data-countdown-timer-is-countdown-value="<%= @timer.countdown? %>"
+       data-countdown-timer-update-url-value="<%= timer_path(@timer) %>">
+    
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-start justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 mb-2"><%= @timer.task_name %></h1>
+          <div class="flex items-center space-x-3">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
+              <%= case @timer.status
+                  when 'running' then 'bg-green-100 text-green-800'
+                  when 'paused' then 'bg-amber-100 text-amber-800'
+                  when 'stopped', 'completed' then 'bg-gray-100 text-gray-800'
+                  when 'expired' then 'bg-red-100 text-red-800'
+                  else 'bg-gray-100 text-gray-800'
+                  end %>"
+              data-countdown-timer-target="statusBadge">
+              <%= icon(@timer.status == 'running' ? :play : (@timer.status == 'paused' ? :pause : (@timer.expired? ? :exclamation : :check)), size: 3, class: "mr-1") %>
+              <%= @timer.expired? ? 'Expired' : @timer.status.capitalize %>
+            </span>
+            <% if @timer.countdown? %>
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                <%= icon :hourglass, size: 3, class: "mr-1" %>
+                Countdown Timer
+              </span>
+            <% else %>
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                <%= icon :clock, size: 3, class: "mr-1" %>
+                Stopwatch Timer
+              </span>
+            <% end %>
+          </div>
+        </div>
+        <div class="flex space-x-2">
+          <%= link_to edit_timer_path(@timer), class: "btn-secondary btn-sm" do %>
+            <%= icon_with_text :edit, "Edit", icon: { size: 4 } %>
+          <% end %>
+          <%= button_to timer_path(@timer), method: :delete, class: "btn-danger btn-sm",
+              data: { confirm: "Are you sure you want to delete this timer?" } do %>
+            <%= icon_with_text :trash, "Delete", icon: { size: 4 } %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Timer Display -->
+    <div class="text-center mb-8">
+      <div class="text-6xl font-mono font-bold <%= @timer.expired? ? 'text-red-600 animate-pulse' : 'text-gray-900' %> mb-4"
+           data-countdown-timer-target="display">
+        <%= @timer.formatted_duration %>
+      </div>
+      
+      <% if @timer.countdown? && @timer.target_duration.present? %>
+        <div class="max-w-md mx-auto mb-6">
+          <div class="mb-2 flex justify-between text-sm text-gray-600">
+            <span>Progress</span>
+            <span><%= @timer.progress_percentage.round %>%</span>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-3">
+            <div class="bg-blue-600 h-3 rounded-full transition-all duration-300"
+                 data-countdown-timer-target="progressBar"
+                 style="width: <%= @timer.progress_percentage %>%"></div>
+          </div>
+          <div class="mt-2 text-sm text-gray-600">
+            Target Duration: <%= Timer.format_seconds(@timer.target_duration) %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    
+    <!-- Control Buttons -->
+    <div class="flex justify-center space-x-4 mb-8" data-countdown-timer-target="controlButtons">
+      <% if @timer.stopped? || @timer.completed? || @timer.expired? %>
+        <% if @timer.countdown? %>
+          <button type="button" class="btn-primary btn-lg" data-action="click->countdown-timer#reset">
+            <%= icon_with_text :refresh, "Reset Timer", icon: { size: 5 } %>
+          </button>
+        <% else %>
+          <button type="button" class="btn-success btn-lg" data-action="click->countdown-timer#start">
+            <%= icon_with_text :play, "Start Timer", icon: { size: 5 } %>
+          </button>
+        <% end %>
+      <% elsif @timer.running? %>
+        <button type="button" class="btn-warning btn-lg" data-action="click->countdown-timer#pause">
+          <%= icon_with_text :pause, "Pause", icon: { size: 5 } %>
+        </button>
+        <button type="button" class="btn-danger btn-lg" data-action="click->countdown-timer#stop">
+          <%= icon_with_text :stop, "Stop", icon: { size: 5 } %>
+        </button>
+      <% elsif @timer.paused? %>
+        <button type="button" class="btn-success btn-lg" data-action="click->countdown-timer#resume">
+          <%= icon_with_text :play, "Resume", icon: { size: 5 } %>
+        </button>
+        <button type="button" class="btn-danger btn-lg" data-action="click->countdown-timer#stop">
+          <%= icon_with_text :stop, "Stop", icon: { size: 5 } %>
+        </button>
+      <% end %>
+    </div>
+    
+    <!-- Timer Details -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-200">
+      <div>
+        <h3 class="text-sm font-medium text-gray-600 mb-1">Created</h3>
+        <p class="text-gray-900"><%= @timer.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+      </div>
+      
+      <% if @timer.start_time %>
+        <div>
+          <h3 class="text-sm font-medium text-gray-600 mb-1">Last Started</h3>
+          <p class="text-gray-900"><%= @timer.start_time.strftime("%B %d, %Y at %I:%M %p") %></p>
+        </div>
+      <% end %>
+      
+      <% if @timer.end_time %>
+        <div>
+          <h3 class="text-sm font-medium text-gray-600 mb-1">Ended</h3>
+          <p class="text-gray-900"><%= @timer.end_time.strftime("%B %d, %Y at %I:%M %p") %></p>
+        </div>
+      <% end %>
+      
+      <% if @timer.completed_at %>
+        <div>
+          <h3 class="text-sm font-medium text-gray-600 mb-1">Completed</h3>
+          <p class="text-gray-900"><%= @timer.completed_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+        </div>
+      <% end %>
+      
+      <% if @timer.parse_tags.any? %>
+        <div>
+          <h3 class="text-sm font-medium text-gray-600 mb-1">Tags</h3>
+          <div class="flex flex-wrap gap-2">
+            <% @timer.parse_tags.each do |tag| %>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                <%= tag %>
+              </span>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  
+  <!-- Back Link -->
+  <div class="mt-6 text-center">
+    <%= link_to timers_path, class: "text-blue-600 hover:text-blue-700 font-medium" do %>
+      ← Back to All Timers
+    <% end %>
+  </div>
+</div>
