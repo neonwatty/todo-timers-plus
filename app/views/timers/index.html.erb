@@ -2,42 +2,48 @@
 <% content_for :page_description, "Manage and track your time entries" %>
 
 <!-- Header actions -->
-<div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-  <div>
-    <h2 class="text-xl font-semibold text-gray-900">Your Timers</h2>
-    <p class="text-sm text-gray-600">Total: <%= @timers.count %> timers</p>
-  </div>
-  <div class="mt-4 sm:mt-0">
-    <%= link_to new_timer_path, class: "btn-primary" do %>
-      ➕ New Timer
-    <% end %>
+<div class="mb-8 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-900">Your Timers</h2>
+      <p class="mt-1 text-gray-600">You have <%= @timers.count %> <%= 'timer'.pluralize(@timers.count) %> in total</p>
+    </div>
+    <div class="mt-4 sm:mt-0">
+      <%= link_to new_timer_path, class: "inline-flex items-center justify-center px-5 py-2.5 bg-blue-600 text-white font-medium rounded-lg shadow-sm hover:bg-blue-700 hover:shadow-md transition-all duration-150" do %>
+        <%= icon_with_text :plus, "New Timer", icon: { size: 4 } %>
+      <% end %>
+    </div>
   </div>
 </div>
 
 <!-- Active timers section -->
 <% if @active_timers.any? %>
   <div class="mb-8">
-    <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
-      ▶️ Active Timers
-      <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-100 text-success-800">
-        <%= @active_timers.count %>
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-xl font-semibold text-gray-900 flex items-center">
+        <%= icon :play, size: 6, class: "text-green-600 mr-2" %>
+        Active Timers
+      </h3>
+      <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+        <%= @active_timers.count %> <%= 'timer'.pluralize(@active_timers.count) %>
       </span>
-    </h3>
+    </div>
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <% @active_timers.each do |timer| %>
-        <div class="timer-card" data-timer-id="<%= timer.id %>" data-timer-status="<%= timer.status %>" data-timer-start-time="<%= timer.start_time&.iso8601 %>">
-          <div class="flex items-start justify-between">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all duration-200" data-timer-id="<%= timer.id %>" data-timer-status="<%= timer.status %>" data-timer-start-time="<%= timer.start_time&.iso8601 %>">
+          <div class="flex items-start justify-between mb-4">
             <div class="flex-1">
-              <h4 class="text-lg font-medium text-gray-900 mb-2"><%= timer.task_name %></h4>
-              <div class="timer-display text-2xl font-mono text-primary-600 mb-3">
+              <h4 class="text-lg font-semibold text-gray-900 mb-2"><%= timer.task_name %></h4>
+              <div class="timer-display text-3xl font-mono font-bold text-blue-600 mb-3 <%= 'animate-pulse-subtle' if timer.running? %>">
                 <%= timer.formatted_duration %>
               </div>
-              <div class="flex items-center space-x-2">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                  <%= timer.running? ? 'bg-success-100 text-success-800' : 'bg-warning-100 text-warning-800' %>">
+              <div class="flex items-center space-x-3">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
+                  <%= timer.running? ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800' %>">
+                  <%= icon(timer.running? ? :play : :pause, size: 3, class: "mr-1") %>
                   <%= timer.status.capitalize %>
                 </span>
-                <span class="text-xs text-gray-500">
+                <span class="text-sm text-gray-500">
                   Started <%= time_ago_in_words(timer.start_time) %> ago
                 </span>
               </div>
@@ -48,17 +54,17 @@
             <% if timer.running? %>
               <%= button_to pause_timer_path(timer), method: :patch, class: "btn-warning btn-sm flex-1",
                   data: { timer_action: "pause", timer_id: timer.id } do %>
-                ⏸️ Pause
+                <%= icon_with_text :pause, "Pause", icon: { size: 4 } %>
               <% end %>
             <% elsif timer.paused? %>
               <%= button_to resume_timer_path(timer), method: :patch, class: "btn-success btn-sm flex-1",
                   data: { timer_action: "resume", timer_id: timer.id } do %>
-                ▶️ Resume
+                <%= icon_with_text :play, "Resume", icon: { size: 4 } %>
               <% end %>
             <% end %>
             <%= button_to stop_timer_path(timer), method: :patch, class: "btn-danger btn-sm flex-1",
                 data: { timer_action: "stop", timer_id: timer.id } do %>
-              ⏹️ Stop
+              <%= icon_with_text :stop, "Stop", icon: { size: 4 } %>
             <% end %>
           </div>
         </div>
@@ -68,27 +74,28 @@
 <% end %>
 
 <!-- All timers list -->
-<div class="bg-white shadow rounded-lg">
-  <div class="px-6 py-4 border-b border-gray-200">
-    <h3 class="text-lg font-medium text-gray-900">All Timers</h3>
+<div class="bg-white rounded-xl shadow-sm border border-gray-100">
+  <div class="px-6 py-4 border-b border-gray-100">
+    <h3 class="text-xl font-semibold text-gray-900">All Timers</h3>
   </div>
   
   <% if @timers.any? %>
     <div class="divide-y divide-gray-200">
       <% @timers.each do |timer| %>
-        <div class="p-6 hover:bg-gray-50">
+        <div class="p-6 hover:bg-gray-50 transition-colors duration-150">
           <div class="flex items-center justify-between">
             <div class="flex-1">
               <div class="flex items-center space-x-3">
-                <%= link_to timer_path(timer), class: "text-lg font-medium text-gray-900 hover:text-primary-600" do %>
+                <%= link_to timer_path(timer), class: "text-lg font-medium text-gray-900 hover:text-blue-600 transition-colors" do %>
                   <%= timer.task_name %>
                 <% end %>
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                   <%= case timer.status
-                      when 'running' then 'bg-success-100 text-success-800'
-                      when 'paused' then 'bg-warning-100 text-warning-800'
+                      when 'running' then 'bg-green-100 text-green-800'
+                      when 'paused' then 'bg-amber-100 text-amber-800'
                       when 'stopped', 'completed' then 'bg-gray-100 text-gray-800'
                       end %>">
+                  <%= icon(timer.status == 'running' ? :play : (timer.status == 'paused' ? :pause : :check), size: 3, class: "mr-1") %>
                   <%= timer.status.capitalize %>
                 </span>
               </div>
@@ -113,32 +120,32 @@
                 <% if timer.running? %>
                   <%= button_to pause_timer_path(timer), method: :patch, class: "btn-warning btn-sm",
                       data: { timer_action: "pause", timer_id: timer.id } do %>
-                    ⏸️
+                    <%= icon :pause, size: 4 %>
                   <% end %>
                 <% elsif timer.paused? %>
                   <%= button_to resume_timer_path(timer), method: :patch, class: "btn-success btn-sm",
                       data: { timer_action: "resume", timer_id: timer.id } do %>
-                    ▶️
+                    <%= icon :play, size: 4 %>
                   <% end %>
                 <% end %>
                 <%= button_to stop_timer_path(timer), method: :patch, class: "btn-danger btn-sm",
                     data: { timer_action: "stop", timer_id: timer.id } do %>
-                  ⏹️
+                  <%= icon :stop, size: 4 %>
                 <% end %>
               <% else %>
                 <%= button_to start_timer_path(timer), method: :patch, class: "btn-success btn-sm",
                     data: { timer_action: "start", timer_id: timer.id } do %>
-                  ▶️ Start
+                  <%= icon_with_text :play, "Start", icon: { size: 4 } %>
                 <% end %>
               <% end %>
               
               <%= link_to edit_timer_path(timer), class: "btn-secondary btn-sm" do %>
-                ✏️
+                <%= icon :edit, size: 4 %>
               <% end %>
               
               <%= button_to timer_path(timer), method: :delete, class: "btn-danger btn-sm",
                   data: { confirm: "Are you sure you want to delete this timer?" } do %>
-                🗑️
+                <%= icon :trash, size: 4 %>
               <% end %>
             </div>
           </div>
@@ -146,12 +153,14 @@
       <% end %>
     </div>
   <% else %>
-    <div class="text-center py-12">
-      <div class="text-6xl mb-4">⏱️</div>
-      <h3 class="text-lg font-medium text-gray-900 mb-2">No timers yet</h3>
-      <p class="text-gray-500 mb-6">Create your first timer to start tracking your time!</p>
-      <%= link_to new_timer_path, class: "btn-primary" do %>
-        ➕ Create First Timer
+    <div class="text-center py-16">
+      <div class="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full mb-6">
+        <%= icon :clock, size: 12, class: "text-gray-400" %>
+      </div>
+      <h3 class="text-2xl font-semibold text-gray-900 mb-3">No timers yet</h3>
+      <p class="text-gray-600 mb-8 max-w-md mx-auto">Create your first timer to start tracking your time and boost your productivity!</p>
+      <%= link_to new_timer_path, class: "inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg shadow-sm hover:bg-blue-700 hover:shadow-md transition-all duration-150" do %>
+        <%= icon_with_text :plus, "Create First Timer", icon: { size: 4 } %>
       <% end %>
     </div>
   <% end %>

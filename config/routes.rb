@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get "analytics", to: "analytics#index"
   root "dashboard#index"
   
   resources :timers do

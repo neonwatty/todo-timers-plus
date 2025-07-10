@@ -8,6 +8,9 @@ class Timer < ApplicationRecord
 
   scope :active, -> { where(status: ['running', 'paused']) }
   scope :completed, -> { where(status: ['stopped', 'completed']) }
+  scope :by_date_range, ->(start_date, end_date) { where(created_at: start_date..end_date) }
+  scope :by_week, ->(date) { by_date_range(date.beginning_of_week, date.end_of_week) }
+  scope :by_month, ->(date) { by_date_range(date.beginning_of_month, date.end_of_month) }
 
   def running?
     status == 'running'

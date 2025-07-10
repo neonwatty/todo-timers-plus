@@ -1,14 +1,17 @@
-/** @type {import('tailwindcss').Config} */
+const defaultTheme = require('tailwindcss/defaultTheme')
+
 module.exports = {
   content: [
-    './app/**/*.{html,erb,js,ts}',
-    './app/views/**/*.erb',
-    './app/javascript/**/*.{js,ts}',
+    './public/*.html',
     './app/helpers/**/*.rb',
-    './app/assets/stylesheets/**/*.css'
+    './app/javascript/**/*.js',
+    './app/views/**/*.{erb,haml,html,slim}'
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter var', ...defaultTheme.fontFamily.sans],
+      },
       colors: {
         primary: {
           50: '#eff6ff',
@@ -36,5 +39,7 @@ module.exports = {
   },
   plugins: [
     require('@tailwindcss/forms'),
-  ],
+    require('@tailwindcss/typography'),
+    require('@tailwindcss/container-queries'),
+  ]
 }

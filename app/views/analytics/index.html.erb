@@ -1,0 +1,226 @@
+<% content_for :page_title, "Analytics" %>
+<% content_for :page_description, "Track your productivity and time patterns" %>
+
+<!-- Period selector -->
+<div class="mb-8">
+  <div class="bg-white shadow rounded-lg p-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+      <h2 class="text-lg font-medium text-gray-900 mb-4 sm:mb-0">Time Period</h2>
+      <div class="flex space-x-2">
+        <%= link_to "Today", analytics_path(period: 'day'), 
+            class: "px-4 py-2 rounded-md text-sm font-medium #{@period == 'day' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}" %>
+        <%= link_to "This Week", analytics_path(period: 'week'), 
+            class: "px-4 py-2 rounded-md text-sm font-medium #{@period == 'week' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}" %>
+        <%= link_to "This Month", analytics_path(period: 'month'), 
+            class: "px-4 py-2 rounded-md text-sm font-medium #{@period == 'month' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}" %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Summary stats -->
+<div class="mb-8">
+  <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <%= icon :clock, size: 8, class: "text-blue-600" %>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Total Time</dt>
+              <dd class="text-lg font-medium text-gray-900">
+                <% total_hours = @analytics[:total_time] / 3600 %>
+                <% total_minutes = (@analytics[:total_time] % 3600) / 60 %>
+                <%= "#{total_hours}h #{total_minutes}m" %>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <%= icon :document, size: 8, class: "text-green-600" %>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Total Tasks</dt>
+              <dd class="text-lg font-medium text-gray-900"><%= @analytics[:total_tasks] %></dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <%= icon :lightning, size: 8, class: "text-purple-600" %>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Avg per Task</dt>
+              <dd class="text-lg font-medium text-gray-900">
+                <% if @analytics[:total_tasks] > 0 %>
+                  <% avg_seconds = @analytics[:total_time] / @analytics[:total_tasks] %>
+                  <% avg_minutes = avg_seconds / 60 %>
+                  <%= "#{avg_minutes}m" %>
+                <% else %>
+                  0m
+                <% end %>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <%= icon :fire, size: 8, class: "text-amber-600" %>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Most Productive</dt>
+              <dd class="text-lg font-medium text-gray-900">
+                <% case @period %>
+                <% when 'day' %>
+                  <% most_productive = @analytics[:hourly_breakdown].max_by { |h| h[:total_duration] } %>
+                  <%= most_productive ? most_productive[:label] : 'N/A' %>
+                <% when 'week' %>
+                  <% most_productive = @analytics[:daily_breakdown].max_by { |d| d[:total_duration] } %>
+                  <%= most_productive ? most_productive[:day_name] : 'N/A' %>
+                <% else %>
+                  <% most_productive = @analytics[:weekly_breakdown].max_by { |w| w[:total_duration] } %>
+                  <%= most_productive ? most_productive[:week_label] : 'N/A' %>
+                <% end %>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts -->
+<div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+  <!-- Time distribution chart -->
+  <div class="bg-white shadow rounded-lg p-6">
+    <h3 class="text-lg font-medium text-gray-900 mb-4">Time Distribution</h3>
+    <div class="h-64">
+      <% 
+        case @period
+        when 'day'
+          chart_data = {
+            labels: @analytics[:hourly_breakdown].map { |h| h[:label] },
+            values: @analytics[:hourly_breakdown].map { |h| h[:total_duration] / 60 }
+          }
+        when 'week'
+          chart_data = {
+            labels: @analytics[:daily_breakdown].map { |d| d[:day_name] },
+            values: @analytics[:daily_breakdown].map { |d| d[:total_duration] / 60 }
+          }
+        else
+          chart_data = {
+            labels: @analytics[:weekly_breakdown].map { |w| w[:week_label] },
+            values: @analytics[:weekly_breakdown].map { |w| w[:total_duration] / 60 }
+          }
+        end
+      %>
+      <canvas id="timeChart" data-chart-data="<%= chart_data.to_json %>"></canvas>
+    </div>
+  </div>
+
+  <!-- Top tasks chart -->
+  <% if @analytics[:top_tasks].present? && @analytics[:top_tasks].any? %>
+    <div class="bg-white shadow rounded-lg p-6">
+      <h3 class="text-lg font-medium text-gray-900 mb-4">Top Tasks</h3>
+      <div class="h-64">
+        <% 
+          chart_data = {
+            labels: @analytics[:top_tasks].map { |task, _| task },
+            values: @analytics[:top_tasks].map { |_, duration| duration / 60 }
+          }
+        %>
+        <canvas id="tasksChart" data-chart-data="<%= chart_data.to_json %>"></canvas>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<!-- Detailed breakdown -->
+<div class="mt-8">
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h3 class="text-lg font-medium text-gray-900">Detailed Breakdown</h3>
+    </div>
+    <div class="divide-y divide-gray-200">
+      <% case @period %>
+      <% when 'day' %>
+        <% @analytics[:hourly_breakdown].each do |hour| %>
+          <% if hour[:task_count] > 0 %>
+            <div class="px-6 py-4 flex items-center justify-between">
+              <div>
+                <div class="text-sm font-medium text-gray-900"><%= hour[:label] %></div>
+                <div class="text-sm text-gray-500"><%= pluralize(hour[:task_count], 'task') %></div>
+              </div>
+              <div class="text-sm font-medium text-gray-900">
+                <% minutes = hour[:total_duration] / 60 %>
+                <%= minutes > 0 ? "#{minutes}m" : "—" %>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      <% when 'week' %>
+        <% @analytics[:daily_breakdown].each do |day| %>
+          <div class="px-6 py-4 flex items-center justify-between">
+            <div>
+              <div class="text-sm font-medium text-gray-900">
+                <%= day[:date].strftime('%A, %B %d') %>
+              </div>
+              <div class="text-sm text-gray-500"><%= pluralize(day[:task_count], 'task') %></div>
+            </div>
+            <div class="text-sm font-medium text-gray-900">
+              <% hours = day[:total_duration] / 3600 %>
+              <% minutes = (day[:total_duration] % 3600) / 60 %>
+              <%= hours > 0 ? "#{hours}h #{minutes}m" : "#{minutes}m" %>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <% @analytics[:weekly_breakdown].each do |week| %>
+          <div class="px-6 py-4 flex items-center justify-between">
+            <div>
+              <div class="text-sm font-medium text-gray-900"><%= week[:week_label] %></div>
+              <div class="text-sm text-gray-500"><%= pluralize(week[:task_count], 'task') %></div>
+            </div>
+            <div class="text-sm font-medium text-gray-900">
+              <% hours = week[:total_duration] / 3600 %>
+              <% minutes = (week[:total_duration] % 3600) / 60 %>
+              <%= hours > 0 ? "#{hours}h #{minutes}m" : "#{minutes}m" %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<!-- Actions -->
+<div class="mt-8 flex flex-col sm:flex-row gap-4">
+  <%= link_to timers_path, class: "btn-secondary" do %>
+    <%= icon_with_text :calendar, "View All Timers", icon: { size: 4 } %>
+  <% end %>
+  <%= link_to new_timer_path, class: "btn-primary" do %>
+    <%= icon_with_text :plus, "Create New Timer", icon: { size: 4 } %>
+  <% end %>
+</div>

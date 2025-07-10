@@ -1,43 +1,65 @@
 <div class="space-y-6">
   <div class="text-center">
-    <h2 class="text-2xl font-bold text-gray-900">Sign in to your account</h2>
-    <p class="mt-2 text-sm text-gray-600">
-      Start tracking your time and boost your productivity
+    <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full mb-4 shadow-sm">
+      <%= icon :clock, size: 8, class: "text-blue-600" %>
+    </div>
+    <h2 class="text-3xl font-bold text-gray-900">Welcome back</h2>
+    <p class="mt-2 text-gray-600">
+      Sign in to continue tracking your time
     </p>
   </div>
 
-  <%= form_with url: session_path, local: true, class: "space-y-6" do |form| %>
-    <div>
-      <%= form.label :email_address, "Email address", class: "block text-sm font-medium text-gray-700" %>
-      <div class="mt-1">
+  <%= form_with url: session_path, local: true, class: "space-y-6", data: { turbo: false } do |form| %>
+    <div class="space-y-4">
+      <div class="space-y-2">
+        <%= form.label :email_address, "Email address", class: "block text-sm font-semibold text-gray-700" %>
         <%= form.email_field :email_address, 
             required: true, 
             autofocus: true, 
             autocomplete: "username", 
-            placeholder: "Enter your email address", 
+            placeholder: "you@example.com", 
             value: params[:email_address],
-            class: "form-input" %>
+            class: "block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-150" %>
       </div>
-    </div>
 
-    <div>
-      <%= form.label :password, "Password", class: "block text-sm font-medium text-gray-700" %>
-      <div class="mt-1">
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <%= form.label :password, "Password", class: "block text-sm font-semibold text-gray-700" %>
+          <%= link_to "Forgot password?", new_password_path, class: "text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors" %>
+        </div>
         <%= form.password_field :password, 
             required: true, 
             autocomplete: "current-password", 
-            placeholder: "Enter your password", 
+            placeholder: "••••••••", 
             maxlength: 72,
-            class: "form-input" %>
+            class: "block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-150" %>
+      </div>
+
+      <div class="flex items-center">
+        <input type="checkbox" name="remember_me" id="remember_me" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-all duration-150">
+        <label for="remember_me" class="ml-2 block text-sm text-gray-700 cursor-pointer select-none">
+          Remember me for 30 days
+        </label>
       </div>
     </div>
 
     <div>
-      <%= form.submit "Sign in", class: "btn-primary w-full" %>
+      <%= form.submit "Sign in", class: "w-full inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium text-lg rounded-lg shadow-sm hover:bg-blue-700 hover:shadow-md transition-all duration-150 cursor-pointer", data: { disable_with: "Signing in..." } %>
     </div>
   <% end %>
 
+  <div class="relative">
+    <div class="absolute inset-0 flex items-center">
+      <div class="w-full border-t border-gray-300"></div>
+    </div>
+    <div class="relative flex justify-center text-sm">
+      <span class="px-2 bg-white text-gray-500">New to Todo Timers?</span>
+    </div>
+  </div>
+
   <div class="text-center">
-    <%= link_to "Forgot your password?", new_password_path, class: "text-sm text-primary-600 hover:text-primary-500" %>
+    <p class="text-sm text-gray-600">
+      Contact your administrator to create an account.
+    </p>
   </div>
 </div>

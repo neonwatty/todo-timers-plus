@@ -14,40 +14,85 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%= javascript_importmap_tags %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= vite_client_tag %>
     <%= vite_javascript_tag 'application' %>
-    <%= vite_stylesheet_tag 'application' %>
   </head>
 
   <body class="h-full">
     <% if Current.user %>
       <div class="min-h-full">
-        <!-- Mobile header -->
-        <div class="bg-primary-600 pb-32">
-          <nav class="bg-primary-600">
+        <!-- Navigation -->
+        <div class="bg-gradient-to-r from-blue-600 to-blue-700 pb-32">
+          <nav class="bg-transparent">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <div class="flex h-16 items-center justify-between">
                 <div class="flex items-center">
                   <div class="flex-shrink-0">
-                    <%= link_to root_path, class: "text-white font-bold text-xl" do %>
-                      ⏱️ Todo Timers+
+                    <%= link_to root_path, class: "flex items-center space-x-2 text-white font-bold text-xl" do %>
+                      <%= icon :clock, size: 6 %>
+                      <span>Todo Timers+</span>
+                    <% end %>
+                  </div>
+                  <div class="hidden md:ml-10 md:flex md:items-baseline md:space-x-4">
+                    <%= link_to dashboard_path, 
+                        class: "#{current_page?(dashboard_path) ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-600 hover:text-white'} px-3 py-2 rounded-md text-sm font-medium transition-colors" do %>
+                      Dashboard
+                    <% end %>
+                    <%= link_to timers_path, 
+                        class: "#{current_page?(timers_path) ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-600 hover:text-white'} px-3 py-2 rounded-md text-sm font-medium transition-colors" do %>
+                      Timers
+                    <% end %>
+                    <%= link_to analytics_path, 
+                        class: "#{current_page?(analytics_path) ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-600 hover:text-white'} px-3 py-2 rounded-md text-sm font-medium transition-colors" do %>
+                      Analytics
                     <% end %>
                   </div>
                 </div>
-                <div class="flex items-center space-x-4">
-                  <%= link_to timers_path, class: "text-primary-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium" do %>
-                    Timers
-                  <% end %>
-                  <%= link_to dashboard_path, class: "text-primary-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium" do %>
-                    Dashboard
-                  <% end %>
-                  <%= button_to session_path, method: :delete, 
-                      class: "text-primary-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium bg-transparent border-0",
-                      form_class: "inline" do %>
-                    Sign Out
-                  <% end %>
+                <div class="flex items-center">
+                  <div class="ml-4 flex items-center md:ml-6">
+                    <div class="relative ml-3">
+                      <div class="flex items-center space-x-3">
+                        <span class="text-sm text-blue-100"><%= Current.user.email_address %></span>
+                        <%= button_to session_path, method: :delete, 
+                            class: "text-blue-100 hover:text-white px-3 py-2 rounded-md text-sm font-medium bg-transparent border-0 transition-colors",
+                            form_class: "inline" do %>
+                          Sign Out
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="-mr-2 flex md:hidden">
+                    <button type="button" 
+                            class="inline-flex items-center justify-center rounded-md bg-blue-700 p-2 text-blue-100 hover:bg-blue-800 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600"
+                            aria-controls="mobile-menu" 
+                            aria-expanded="false"
+                            onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+                      <span class="sr-only">Open main menu</span>
+                      <svg class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
+              </div>
+            </div>
+            
+            <!-- Mobile menu, show/hide based on menu state -->
+            <div class="hidden md:hidden" id="mobile-menu">
+              <div class="space-y-1 px-2 pb-3 pt-2 sm:px-3">
+                <%= link_to dashboard_path, 
+                    class: "#{current_page?(dashboard_path) ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-600 hover:text-white'} block rounded-md px-3 py-2 text-base font-medium" do %>
+                  Dashboard
+                <% end %>
+                <%= link_to timers_path, 
+                    class: "#{current_page?(timers_path) ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-600 hover:text-white'} block rounded-md px-3 py-2 text-base font-medium" do %>
+                  Timers
+                <% end %>
+                <%= link_to analytics_path, 
+                    class: "#{current_page?(analytics_path) ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-600 hover:text-white'} block rounded-md px-3 py-2 text-base font-medium" do %>
+                  Analytics
+                <% end %>
               </div>
             </div>
           </nav>
@@ -59,7 +104,7 @@
                 <%= content_for(:page_title) || "Dashboard" %>
               </h1>
               <% if content_for?(:page_description) %>
-                <p class="mt-4 text-lg text-primary-200">
+                <p class="mt-4 text-lg text-blue-200">
                   <%= content_for(:page_description) %>
                 </p>
               <% end %>
@@ -72,13 +117,13 @@
           <div class="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
             <!-- Flash messages -->
             <% if notice %>
-              <div class="mb-4 rounded-md bg-success-50 p-4">
-                <div class="text-sm text-success-700"><%= notice %></div>
+              <div class="mb-4 rounded-md bg-green-50 p-4">
+                <div class="text-sm text-green-700"><%= notice %></div>
               </div>
             <% end %>
             <% if alert %>
-              <div class="mb-4 rounded-md bg-danger-50 p-4">
-                <div class="text-sm text-danger-700"><%= alert %></div>
+              <div class="mb-4 rounded-md bg-red-50 p-4">
+                <div class="text-sm text-red-700"><%= alert %></div>
               </div>
             <% end %>
             
@@ -91,7 +136,10 @@
       <div class="min-h-full bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div class="sm:mx-auto sm:w-full sm:max-w-md">
           <div class="text-center">
-            <h1 class="text-3xl font-bold text-gray-900">⏱️ Todo Timers+</h1>
+            <h1 class="text-3xl font-bold text-gray-900 flex items-center justify-center">
+              <%= icon :clock, size: 8, class: "text-blue-600 mr-2" %>
+              Todo Timers+
+            </h1>
             <p class="mt-2 text-sm text-gray-600">Track your time, boost your productivity</p>
           </div>
         </div>
@@ -99,13 +147,13 @@
         <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
             <% if notice %>
-              <div class="mb-4 rounded-md bg-success-50 p-4">
-                <div class="text-sm text-success-700"><%= notice %></div>
+              <div class="mb-4 rounded-md bg-green-50 p-4">
+                <div class="text-sm text-green-700"><%= notice %></div>
               </div>
             <% end %>
             <% if alert %>
-              <div class="mb-4 rounded-md bg-danger-50 p-4">
-                <div class="text-sm text-danger-700"><%= alert %></div>
+              <div class="mb-4 rounded-md bg-red-50 p-4">
+                <div class="text-sm text-red-700"><%= alert %></div>
               </div>
             <% end %>
             

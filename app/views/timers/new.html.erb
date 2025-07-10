@@ -1,11 +1,11 @@
 <% content_for :page_title, "New Timer" %>
 <% content_for :page_description, "Create a new timer to track your time" %>
 
-<div class="bg-white shadow rounded-lg p-6 max-w-2xl mx-auto">
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 max-w-2xl mx-auto">
   <%= form_with model: @timer, local: true, class: "space-y-6" do |form| %>
     <% if @timer.errors.any? %>
-      <div class="rounded-md bg-danger-50 p-4">
-        <div class="text-sm text-danger-700">
+      <div class="rounded-md bg-red-50 p-4">
+        <div class="text-sm text-red-700">
           <ul class="list-disc list-inside space-y-1">
             <% @timer.errors.full_messages.each do |message| %>
               <li><%= message %></li>
@@ -15,46 +15,61 @@
       </div>
     <% end %>
 
-    <div>
-      <%= form.label :task_name, class: "block text-sm font-medium text-gray-700 mb-2" do %>
+    <div class="space-y-2">
+      <%= form.label :task_name, class: "block text-sm font-semibold text-gray-700" do %>
         Task Name
-        <span class="text-danger-500">*</span>
+        <span class="text-red-500">*</span>
       <% end %>
       <%= form.text_field :task_name, 
-          class: "form-input",
+          class: "block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-150",
           placeholder: "e.g., Work on project proposal",
           required: true %>
-      <p class="mt-1 text-sm text-gray-500">
+      <p class="text-sm text-gray-500">
         Give your timer a descriptive name so you can track what you worked on.
       </p>
     </div>
 
-    <div>
-      <%= form.label :tags, class: "block text-sm font-medium text-gray-700 mb-2" do %>
+    <div class="space-y-2">
+      <%= form.label :tags, class: "block text-sm font-semibold text-gray-700" do %>
         Tags
-        <span class="text-gray-400">(Optional)</span>
+        <span class="text-gray-400 font-normal">(Optional)</span>
       <% end %>
       <%= form.text_field :tags, 
-          class: "form-input",
+          class: "block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-150",
           placeholder: "e.g., work, project, client-abc" %>
-      <p class="mt-1 text-sm text-gray-500">
+      <p class="text-sm text-gray-500">
         Separate multiple tags with commas. Use tags to categorize and filter your timers.
       </p>
     </div>
 
-    <div class="bg-gray-50 rounded-lg p-4">
-      <h3 class="text-sm font-medium text-gray-900 mb-2">ℹ️ Getting Started</h3>
-      <ul class="text-sm text-gray-600 space-y-1">
-        <li>• Create your timer with a descriptive task name</li>
-        <li>• Once created, you can start, pause, and stop the timer</li>
-        <li>• Use tags to organize related tasks together</li>
-        <li>• Track your productivity in the dashboard</li>
+    <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-5 border border-blue-200">
+      <h3 class="text-sm font-semibold text-blue-900 mb-3 flex items-center">
+        <%= icon :lightning, size: 4, class: "text-blue-600 mr-2" %>
+        Getting Started
+      </h3>
+      <ul class="text-sm text-blue-800 space-y-2">
+        <li class="flex items-start">
+          <span class="text-blue-600 mr-2">•</span>
+          <span>Create your timer with a descriptive task name</span>
+        </li>
+        <li class="flex items-start">
+          <span class="text-blue-600 mr-2">•</span>
+          <span>Once created, you can start, pause, and stop the timer</span>
+        </li>
+        <li class="flex items-start">
+          <span class="text-blue-600 mr-2">•</span>
+          <span>Use tags to organize related tasks together</span>
+        </li>
+        <li class="flex items-start">
+          <span class="text-blue-600 mr-2">•</span>
+          <span>Track your productivity in the dashboard</span>
+        </li>
       </ul>
     </div>
 
-    <div class="flex flex-col sm:flex-row gap-3">
-      <%= form.submit "Create Timer", class: "btn-primary" %>
-      <%= link_to timers_path, class: "btn-secondary" do %>
+    <div class="flex flex-col sm:flex-row gap-3 pt-2">
+      <%= form.submit "Create Timer", class: "inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg shadow-sm hover:bg-blue-700 hover:shadow-md transition-all duration-150 cursor-pointer" %>
+      <%= link_to timers_path, class: "inline-flex items-center justify-center px-6 py-3 bg-white text-gray-700 font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition-all duration-150" do %>
         Cancel
       <% end %>
     </div>

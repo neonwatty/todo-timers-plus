@@ -1,8 +1,8 @@
-// Import CSS
-import './application.css'
-
 // Import Hotwire
 import '@hotwired/turbo-rails'
+
+// Import Chart.js
+import Chart from 'chart.js/auto'
 
 // Timer functionality
 class TimerManager {
@@ -73,12 +73,128 @@ class TimerManager {
   }
 }
 
+// Analytics Charts
+class AnalyticsManager {
+  constructor() {
+    this.initCharts()
+  }
+
+  initCharts() {
+    // Daily/Weekly time chart
+    const timeChartElement = document.getElementById('timeChart')
+    if (timeChartElement) {
+      this.createTimeChart(timeChartElement)
+    }
+
+    // Top tasks chart
+    const tasksChartElement = document.getElementById('tasksChart')
+    if (tasksChartElement) {
+      this.createTasksChart(tasksChartElement)
+    }
+  }
+
+  createTimeChart(canvas) {
+    const data = JSON.parse(canvas.dataset.chartData || '{}')
+    
+    new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: data.labels || [],
+        datasets: [{
+          label: 'Time Spent (minutes)',
+          data: data.values || [],
+          backgroundColor: 'rgba(59, 130, 246, 0.5)',
+          borderColor: 'rgb(59, 130, 246)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function(value) {
+                return value + ' min'
+              }
+            }
+          }
+        },
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const minutes = context.parsed.y
+                const hours = Math.floor(minutes / 60)
+                const mins = minutes % 60
+                return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`
+              }
+            }
+          }
+        }
+      }
+    })
+  }
+
+  createTasksChart(canvas) {
+    const data = JSON.parse(canvas.dataset.chartData || '{}')
+    
+    new Chart(canvas, {
+      type: 'doughnut',
+      data: {
+        labels: data.labels || [],
+        datasets: [{
+          data: data.values || [],
+          backgroundColor: [
+            'rgba(59, 130, 246, 0.8)',
+            'rgba(34, 197, 94, 0.8)',
+            'rgba(245, 158, 11, 0.8)',
+            'rgba(239, 68, 68, 0.8)',
+            'rgba(147, 51, 234, 0.8)'
+          ],
+          borderWidth: 2,
+          borderColor: '#fff'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              padding: 15,
+              font: {
+                size: 12
+              }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const minutes = context.parsed
+                const hours = Math.floor(minutes / 60)
+                const mins = minutes % 60
+                const time = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`
+                return `${context.label}: ${time}`
+              }
+            }
+          }
+        }
+      }
+    })
+  }
+}
+
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
   new TimerManager()
+  new AnalyticsManager()
 })
 
 // Reinitialize on Turbo visits
 document.addEventListener('turbo:load', () => {
   new TimerManager()
+  new AnalyticsManager()
 })
