@@ -1,0 +1,76 @@
+<%= turbo_frame_tag dom_id(timer, :list), class: "contents" do %>
+  <div class="p-6 hover:bg-gray-50 transition-colors duration-150"
+       data-timer-id="<%= timer.id %>"
+       data-controller="countdown-timer"
+       data-countdown-timer-timer-id-value="<%= timer.id %>"
+       data-countdown-timer-status-value="<%= timer.status %>"
+       data-countdown-timer-start-time-value="<%= timer.start_time&.iso8601 %>"
+       data-countdown-timer-target-duration-value="<%= timer.target_duration || 0 %>"
+       data-countdown-timer-remaining-duration-value="<%= timer.calculate_remaining_time %>"
+       data-countdown-timer-is-countdown-value="<%= timer.countdown? %>"
+       data-countdown-timer-update-url-value="<%= timer_path(timer) %>">
+    <div class="flex items-center justify-between">
+      <div class="flex-1">
+        <div class="flex items-center space-x-3">
+          <%= link_to timer_path(timer), class: "text-lg font-medium text-gray-900 hover:text-blue-600 transition-colors" do %>
+            <%= timer.task_name %>
+          <% end %>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+            <%= case timer.status
+                when 'running' then 'bg-green-100 text-green-800'
+                when 'paused' then 'bg-amber-100 text-amber-800'
+                when 'stopped', 'completed' then 'bg-gray-100 text-gray-800'
+                when 'expired' then 'bg-red-100 text-red-800'
+                else 'bg-gray-100 text-gray-800'
+                end %>">
+            <%= icon(timer.status == 'running' ? :play : (timer.status == 'paused' ? :pause : (timer.expired? ? :exclamation : :check)), size: 3, class: "mr-1") %>
+            <%= timer.expired? ? 'Expired' : timer.status.capitalize %>
+          </span>
+          <% if timer.countdown? %>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+              <%= icon :hourglass, size: 3, class: "mr-1" %>
+              Countdown
+            </span>
+          <% end %>
+        </div>
+        
+        <div class="mt-2 flex items-center space-x-4 text-sm text-gray-500">
+          <span class="font-mono font-medium <%= timer.expired? ? 'text-red-600' : 'text-gray-900' %>"
+                data-countdown-timer-target="display">
+            <%= timer.formatted_duration %>
+          </span>
+          <% if timer.countdown? && timer.target_duration.present? %>
+            <span>
+              Target: <%= Timer.format_seconds(timer.target_duration) %>
+            </span>
+          <% end %>
+          <span>
+            Created <%= time_ago_in_words(timer.created_at) %> ago
+          </span>
+          <% if timer.start_time %>
+            <span>
+              Started <%= timer.start_time.strftime("%b %d, %Y at %I:%M %p") %>
+            </span>
+          <% end %>
+        </div>
+      </div>
+      
+      <div class="flex items-center space-x-2">
+        <%= render 'timers/timer_controls_compact', timer: timer %>
+        
+        <%= link_to edit_timer_path(timer), class: "btn-secondary btn-sm" do %>
+          <%= icon :edit, size: 4 %>
+        <% end %>
+        
+        <%= button_to timer_path(timer), method: :delete, 
+            data: { 
+              turbo_method: :delete,
+              turbo_confirm: "Are you sure you want to delete this timer?" 
+            }, 
+            class: "btn-danger btn-sm" do %>
+          <%= icon :trash, size: 4 %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

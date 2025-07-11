@@ -180,13 +180,15 @@ class Timer < ApplicationRecord
         # Resume countdown with stored remaining time
         update!(
           status: 'running',
-          start_time: Time.current
+          start_time: Time.current,
+          end_time: nil
         )
       else
         # For stopwatch timers
         update!(
           status: 'running',
-          start_time: Time.current - duration.seconds
+          start_time: Time.current - duration.seconds,
+          end_time: nil
         )
       end
     end

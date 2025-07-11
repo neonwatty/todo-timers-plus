@@ -1,0 +1,46 @@
+<%
+  # Optional: pass button_class to customize button styling
+  button_class ||= ""
+%>
+<% if timer.stopped? || timer.completed? %>
+  <%= button_to start_timer_path(timer), method: :patch, 
+      data: { turbo_method: :patch },
+      class: "btn-success btn-sm #{button_class}" do %>
+    <%= icon_with_text :play, "Start", icon: { size: 4 } %>
+  <% end %>
+  <% if timer.countdown? && timer.expired? %>
+    <%= button_to reset_timer_path(timer), method: :patch,
+        data: { turbo_method: :patch },
+        class: "btn-primary btn-sm #{button_class}" do %>
+      <%= icon_with_text :refresh, "Reset", icon: { size: 4 } %>
+    <% end %>
+  <% end %>
+<% elsif timer.running? %>
+  <%= button_to pause_timer_path(timer), method: :patch,
+      data: { turbo_method: :patch },
+      class: "btn-warning btn-sm #{button_class}" do %>
+    <%= icon_with_text :pause, "Pause", icon: { size: 4 } %>
+  <% end %>
+  <%= button_to stop_timer_path(timer), method: :patch,
+      data: { turbo_method: :patch },
+      class: "btn-danger btn-sm #{button_class}" do %>
+    <%= icon_with_text :stop, "Stop", icon: { size: 4 } %>
+  <% end %>
+<% elsif timer.paused? %>
+  <%= button_to resume_timer_path(timer), method: :patch,
+      data: { turbo_method: :patch },
+      class: "btn-success btn-sm #{button_class}" do %>
+    <%= icon_with_text :play, "Resume", icon: { size: 4 } %>
+  <% end %>
+  <%= button_to stop_timer_path(timer), method: :patch,
+      data: { turbo_method: :patch },
+      class: "btn-danger btn-sm #{button_class}" do %>
+    <%= icon_with_text :stop, "Stop", icon: { size: 4 } %>
+  <% end %>
+<% elsif timer.expired? %>
+  <%= button_to reset_timer_path(timer), method: :patch,
+      data: { turbo_method: :patch },
+      class: "btn-primary btn-sm #{button_class}" do %>
+    <%= icon_with_text :refresh, "Reset", icon: { size: 4 } %>
+  <% end %>
+<% end %>

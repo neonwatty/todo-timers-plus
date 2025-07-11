@@ -70,12 +70,16 @@ class TimersController < ApplicationController
 
   def destroy
     @timer.destroy
-    redirect_to timers_url, notice: 'Timer was successfully deleted.'
+    respond_to do |format|
+      format.turbo_stream { render turbo_stream: turbo_stream.remove(dom_id(@timer)) }
+      format.html { redirect_to timers_url, notice: 'Timer was successfully deleted.' }
+    end
   end
 
   def start
     @timer.start!
     respond_to do |format|
+      format.turbo_stream
       format.html { redirect_to request.referrer || timers_path, notice: 'Timer started!' }
       format.json { render json: timer_json(@timer) }
     end
@@ -85,11 +89,13 @@ class TimersController < ApplicationController
     if @timer.running?
       @timer.pause!
       respond_to do |format|
+        format.turbo_stream
         format.html { redirect_to request.referrer || timers_path, notice: 'Timer paused!' }
         format.json { render json: timer_json(@timer) }
       end
     else
       respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.replace("flash", partial: "shared/flash", locals: { alert: 'Timer is not running.' }) }
         format.html { redirect_to request.referrer || timers_path, alert: 'Timer is not running.' }
         format.json { render json: { error: 'Timer is not running' }, status: :unprocessable_entity }
       end
@@ -100,11 +106,13 @@ class TimersController < ApplicationController
     if @timer.paused?
       @timer.resume!
       respond_to do |format|
+        format.turbo_stream
         format.html { redirect_to request.referrer || timers_path, notice: 'Timer resumed!' }
         format.json { render json: timer_json(@timer) }
       end
     else
       respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.replace("flash", partial: "shared/flash", locals: { alert: 'Timer is not paused.' }) }
         format.html { redirect_to request.referrer || timers_path, alert: 'Timer is not paused.' }
         format.json { render json: { error: 'Timer is not paused' }, status: :unprocessable_entity }
       end
@@ -115,11 +123,13 @@ class TimersController < ApplicationController
     if @timer.running? || @timer.paused?
       @timer.stop!
       respond_to do |format|
+        format.turbo_stream
         format.html { redirect_to request.referrer || timers_path, notice: 'Timer stopped!' }
         format.json { render json: timer_json(@timer) }
       end
     else
       respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.replace("flash", partial: "shared/flash", locals: { alert: 'Timer is not active.' }) }
         format.html { redirect_to request.referrer || timers_path, alert: 'Timer is not active.' }
         format.json { render json: { error: 'Timer is not active' }, status: :unprocessable_entity }
       end
@@ -129,6 +139,7 @@ class TimersController < ApplicationController
   def reset
     @timer.reset!
     respond_to do |format|
+      format.turbo_stream
       format.html { redirect_to request.referrer || timers_path, notice: 'Timer reset!' }
       format.json { render json: timer_json(@timer) }
     end
@@ -145,7 +156,7 @@ class TimersController < ApplicationController
   end
   
   def timer_json(timer)
-    {
+    json = {
       id: timer.id,
       task_name: timer.task_name,
       status: timer.status,
@@ -161,5 +172,20 @@ class TimersController < ApplicationController
       formatted_duration: timer.formatted_duration,
       progress_percentage: timer.progress_percentage
     }
+    
+    # Include updated controls HTML
+    json[:controls_html] = render_to_string(
+      partial: 'timers/timer_controls',
+      locals: { timer: timer },
+      formats: [:html]
+    )
+    
+    json[:controls_compact_html] = render_to_string(
+      partial: 'timers/timer_controls_compact', 
+      locals: { timer: timer },
+      formats: [:html]
+    )
+    
+    json
   end
 end

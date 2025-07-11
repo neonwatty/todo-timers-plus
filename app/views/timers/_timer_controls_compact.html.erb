@@ -1,0 +1,49 @@
+<%
+  # Compact timer controls with icon-only buttons
+  button_class ||= ""
+%>
+<% unless timer.status.in?(['stopped', 'completed']) %>
+  <% if timer.running? %>
+    <%= button_to pause_timer_path(timer), method: :patch,
+        data: { turbo_method: :patch },
+        class: "btn-warning btn-sm #{button_class}",
+        title: "Pause" do %>
+      <%= icon :pause, size: 4 %>
+    <% end %>
+  <% elsif timer.paused? %>
+    <%= button_to resume_timer_path(timer), method: :patch,
+        data: { turbo_method: :patch },
+        class: "btn-success btn-sm #{button_class}",
+        title: "Resume" do %>
+      <%= icon :play, size: 4 %>
+    <% end %>
+  <% elsif timer.expired? %>
+    <%= button_to reset_timer_path(timer), method: :patch,
+        data: { turbo_method: :patch },
+        class: "btn-primary btn-sm #{button_class}",
+        title: "Reset" do %>
+      <%= icon :refresh, size: 4 %>
+    <% end %>
+  <% end %>
+  <%= button_to stop_timer_path(timer), method: :patch,
+      data: { turbo_method: :patch },
+      class: "btn-danger btn-sm #{button_class}",
+      title: "Stop" do %>
+    <%= icon :stop, size: 4 %>
+  <% end %>
+<% else %>
+  <%= button_to start_timer_path(timer), method: :patch,
+      data: { turbo_method: :patch },
+      class: "btn-success btn-sm #{button_class}",
+      title: "Start" do %>
+    <%= icon_with_text :play, "Start", icon: { size: 4 } %>
+  <% end %>
+  <% if timer.countdown? && timer.expired? %>
+    <%= button_to reset_timer_path(timer), method: :patch,
+        data: { turbo_method: :patch },
+        class: "btn-primary btn-sm #{button_class}",
+        title: "Reset" do %>
+      <%= icon_with_text :refresh, "Reset", icon: { size: 4 } %>
+    <% end %>
+  <% end %>
+<% end %>

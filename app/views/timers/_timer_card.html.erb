@@ -1,0 +1,47 @@
+<%= turbo_frame_tag dom_id(timer), class: "contents" do %>
+  <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all duration-200" 
+       data-timer-id="<%= timer.id %>"
+       data-controller="countdown-timer"
+       data-countdown-timer-timer-id-value="<%= timer.id %>"
+       data-countdown-timer-status-value="<%= timer.status %>"
+       data-countdown-timer-start-time-value="<%= timer.start_time&.iso8601 %>"
+       data-countdown-timer-target-duration-value="<%= timer.target_duration || 0 %>"
+       data-countdown-timer-remaining-duration-value="<%= timer.calculate_remaining_time %>"
+       data-countdown-timer-is-countdown-value="<%= timer.countdown? %>"
+       data-countdown-timer-update-url-value="<%= timer_path(timer) %>">
+    <div class="flex items-start justify-between mb-4">
+      <div class="flex-1">
+        <h4 class="text-lg font-semibold text-gray-900 mb-2"><%= timer.task_name %></h4>
+        <div class="text-3xl font-mono font-bold <%= timer.expired? ? 'text-red-600' : 'text-blue-600' %> mb-3 <%= 'animate-pulse-subtle' if timer.running? %>"
+             data-countdown-timer-target="display">
+          <%= timer.formatted_duration %>
+        </div>
+        <% if timer.countdown? && timer.target_duration.present? %>
+          <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+            <div class="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                 data-countdown-timer-target="progressBar"
+                 style="width: <%= timer.progress_percentage %>%"></div>
+          </div>
+        <% end %>
+        <div class="flex items-center space-x-3">
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
+            <%= timer.running? ? 'bg-green-100 text-green-800' : (timer.expired? ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800') %>">
+            <%= icon(timer.running? ? :play : (timer.expired? ? :exclamation : :pause), size: 3, class: "mr-1") %>
+            <%= timer.expired? ? 'Expired' : timer.status.capitalize %>
+          </span>
+          <span class="text-sm text-gray-500">
+            <% if timer.countdown? %>
+              <%= timer.expired? ? 'Expired' : "#{timer.calculate_remaining_time / 60} minutes remaining" %>
+            <% else %>
+              Started <%= time_ago_in_words(timer.start_time) %> ago
+            <% end %>
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="mt-4 flex space-x-2">
+      <%= render 'timers/timer_controls', timer: timer, button_class: 'flex-1' %>
+    </div>
+  </div>
+<% end %>

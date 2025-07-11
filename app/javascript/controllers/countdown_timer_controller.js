@@ -253,6 +253,9 @@ export default class extends Controller {
     
     // Update UI classes
     this.updateUIState()
+    
+    // Update controls with server-rendered HTML
+    this.updateControlsFromServer(data)
   }
   
   updateUIState() {
@@ -351,5 +354,45 @@ export default class extends Controller {
   
   iconWithTextHtml(iconName, text, size) {
     return `<span class="inline-flex items-center gap-2">${this.iconHtml(iconName, size)} ${text}</span>`
+  }
+  
+  updateControlsFromServer(data) {
+    // Find the controls container in the DOM
+    const controlsContainer = this.element.querySelector('.flex.items-center.gap-2, .flex.space-x-2')
+    
+    if (controlsContainer && (data.controls_html || data.controls_compact_html)) {
+      // Determine which controls to use based on the current view
+      const isCompactView = controlsContainer.querySelector('button[title]') !== null
+      const controlsHtml = isCompactView ? data.controls_compact_html : data.controls_html
+      
+      if (controlsHtml) {
+        // Create a temporary container to parse the HTML
+        const temp = document.createElement('div')
+        temp.innerHTML = controlsHtml
+        
+        // Find all timer control buttons in the container
+        const existingButtons = controlsContainer.querySelectorAll('button[data-action*="countdown-timer"]')
+        
+        // Replace the existing buttons with new ones
+        if (existingButtons.length > 0 && temp.children.length > 0) {
+          // Remove existing timer control buttons
+          existingButtons.forEach(btn => btn.remove())
+          
+          // Insert new buttons at the beginning of the container
+          const firstNonTimerElement = controlsContainer.querySelector('a, button:not([data-action*="countdown-timer"])')
+          if (firstNonTimerElement) {
+            // Insert all new buttons before the first non-timer element
+            while (temp.firstChild) {
+              controlsContainer.insertBefore(temp.firstChild, firstNonTimerElement)
+            }
+          } else {
+            // Append to the end if no non-timer elements found
+            while (temp.firstChild) {
+              controlsContainer.appendChild(temp.firstChild)
+            }
+          }
+        }
+      }
+    }
   }
 }
