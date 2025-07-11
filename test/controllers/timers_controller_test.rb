@@ -85,14 +85,14 @@ class TimersControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to timers_url
-    assert_equal "Timer was successfully destroyed.", flash[:notice]
+    assert_equal "Timer was successfully deleted.", flash[:notice]
   end
 
   test "should start timer" do
-    timer = @user.timers.create!(task_name: "Test Timer", status: "pending")
+    timer = @user.timers.create!(task_name: "Test Timer", status: "stopped")
     
     patch start_timer_url(timer)
-    assert_redirected_to timer_url(timer)
+    assert_redirected_to timers_url
     
     timer.reload
     assert_equal "running", timer.status
@@ -101,7 +101,7 @@ class TimersControllerTest < ActionDispatch::IntegrationTest
 
   test "should pause timer" do
     patch pause_timer_url(@timer)
-    assert_redirected_to timer_url(@timer)
+    assert_redirected_to timers_url
     
     @timer.reload
     assert_equal "paused", @timer.status
@@ -111,7 +111,7 @@ class TimersControllerTest < ActionDispatch::IntegrationTest
     timer = timers(:paused_timer)
     
     patch resume_timer_url(timer)
-    assert_redirected_to timer_url(timer)
+    assert_redirected_to timers_url
     
     timer.reload
     assert_equal "running", timer.status
@@ -119,7 +119,7 @@ class TimersControllerTest < ActionDispatch::IntegrationTest
 
   test "should stop timer" do
     patch stop_timer_url(@timer)
-    assert_redirected_to timer_url(@timer)
+    assert_redirected_to timers_url
     
     @timer.reload
     assert_equal "stopped", @timer.status

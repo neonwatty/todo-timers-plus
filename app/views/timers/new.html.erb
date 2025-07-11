@@ -33,7 +33,7 @@
       <label class="form-label">Timer Type</label>
       <div class="grid grid-cols-2 gap-4">
         <label class="relative flex cursor-pointer rounded-lg border border-gray-300 bg-white p-4 shadow-sm focus:outline-none hover:border-blue-500 transition-colors">
-          <input type="radio" name="timer_type" value="stopwatch" class="sr-only" checked onclick="document.getElementById('duration-picker').classList.add('hidden')">
+          <%= form.radio_button :timer_type, "stopwatch", class: "sr-only", checked: true, onclick: "document.getElementById('duration-picker').classList.add('hidden')" %>
           <div class="flex flex-1">
             <div class="flex flex-col">
               <span class="block text-sm font-medium text-gray-900">
@@ -48,7 +48,7 @@
         </label>
         
         <label class="relative flex cursor-pointer rounded-lg border border-gray-300 bg-white p-4 shadow-sm focus:outline-none hover:border-blue-500 transition-colors">
-          <input type="radio" name="timer_type" value="countdown" class="sr-only" onclick="document.getElementById('duration-picker').classList.remove('hidden')">
+          <%= form.radio_button :timer_type, "countdown", class: "sr-only", onclick: "document.getElementById('duration-picker').classList.remove('hidden')" %>
           <div class="flex flex-1">
             <div class="flex flex-col">
               <span class="block text-sm font-medium text-gray-900">
@@ -164,7 +164,7 @@
   }
   
   // Make radio buttons visually active
-  document.querySelectorAll('input[name="timer_type"]').forEach(radio => {
+  document.querySelectorAll('input[name="timer[timer_type]"]').forEach(radio => {
     radio.addEventListener('change', function() {
       // Remove active styling from all
       document.querySelectorAll('label.relative').forEach(label => {
@@ -178,5 +178,5 @@
   });
   
   // Initialize the first radio button as selected
-  document.querySelector('input[name="timer_type"]:checked')?.closest('label').classList.add('border-blue-500', 'ring-2', 'ring-blue-500');
+  document.querySelector('input[name="timer[timer_type]"]:checked')?.closest('label').classList.add('border-blue-500', 'ring-2', 'ring-blue-500');
 </script>

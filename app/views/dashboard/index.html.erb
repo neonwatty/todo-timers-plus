@@ -179,23 +179,43 @@
   <% if @recent_timers.any? %>
     <div class="divide-y divide-gray-200">
       <% @recent_timers.each do |timer| %>
-        <div class="p-6 hover:bg-gray-50 transition-colors duration-150">
+        <div class="p-6 hover:bg-gray-50 transition-colors duration-150"
+             data-controller="countdown-timer"
+             data-countdown-timer-timer-id-value="<%= timer.id %>"
+             data-countdown-timer-status-value="<%= timer.status %>"
+             data-countdown-timer-start-time-value="<%= timer.start_time&.iso8601 %>"
+             data-countdown-timer-target-duration-value="<%= timer.target_duration || 0 %>"
+             data-countdown-timer-remaining-duration-value="<%= timer.calculate_remaining_time %>"
+             data-countdown-timer-is-countdown-value="<%= timer.countdown? %>"
+             data-countdown-timer-update-url-value="<%= timer_path(timer) %>">
           <div class="flex items-center justify-between">
             <div class="flex-1 min-w-0">
               <h3 class="text-sm font-medium text-gray-900 truncate">
                 <%= timer.task_name %>
               </h3>
               <p class="mt-1 text-sm text-gray-500">
-                Completed <%= time_ago_in_words(timer.updated_at) %> ago
+                <% if timer.stopped? || timer.completed? %>
+                  <%= timer.countdown? ? 'Ready to start' : 'Stopped' %> • Duration: <%= timer.formatted_duration %>
+                <% else %>
+                  Status: <%= timer.status.capitalize %> • <%= time_ago_in_words(timer.updated_at) %> ago
+                <% end %>
               </p>
             </div>
-            <div class="ml-4 text-right">
-              <div class="text-sm font-medium text-gray-900">
-                <%= timer.formatted_duration %>
-              </div>
-              <div class="text-xs text-gray-500">
-                <%= timer.created_at.strftime("%b %d, %Y") %>
-              </div>
+            <div class="ml-4 flex items-center gap-2">
+              <% if timer.stopped? || timer.completed? %>
+                <% if timer.countdown? %>
+                  <button type="button" class="btn-primary btn-sm" data-action="click->countdown-timer#reset">
+                    <%= icon_with_text :refresh, "Reset", icon: { size: 4 } %>
+                  </button>
+                <% else %>
+                  <button type="button" class="btn-success btn-sm" data-action="click->countdown-timer#start">
+                    <%= icon_with_text :play, "Start", icon: { size: 4 } %>
+                  </button>
+                <% end %>
+              <% end %>
+              <%= link_to timer, class: "btn-secondary btn-sm" do %>
+                <%= icon :chart, size: 4 %>
+              <% end %>
             </div>
           </div>
         </div>

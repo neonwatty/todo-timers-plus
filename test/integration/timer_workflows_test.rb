@@ -38,7 +38,7 @@ class TimerWorkflowsTest < ActionDispatch::IntegrationTest
     
     assert_select "h1", "Integration test task"
     assert_equal "stopped", timer.status
-    assert_equal "work, testing", timer.tags
+    assert_equal ["work", "testing"], timer.parse_tags
     
     # Step 2: Start the timer
     patch start_timer_path(timer)
@@ -52,7 +52,7 @@ class TimerWorkflowsTest < ActionDispatch::IntegrationTest
     assert_match /Timer started!/, flash[:notice]
     
     # Verify timer appears in active timers section
-    assert_select ".timer-display", timer.formatted_duration
+    assert_select "[data-countdown-timer-target='display']", timer.formatted_duration
     assert_select "form[action='#{pause_timer_path(timer)}']"
     
     # Step 3: Pause the timer
@@ -96,7 +96,7 @@ class TimerWorkflowsTest < ActionDispatch::IntegrationTest
       
       # Verify timer no longer appears in active timers section
       get timers_path
-      assert_select ".timer-display", { count: 0 }
+      assert_select "[data-countdown-timer-target='display']", { count: 0 }
     end
   end
 
@@ -188,7 +188,7 @@ class TimerWorkflowsTest < ActionDispatch::IntegrationTest
     assert_equal "running", timer2.status
     
     # Verify active timers section shows both
-    assert_select ".timer-display", count: 2
+    assert_select "[data-countdown-timer-target='display']", count: 2
     
     # Pause one timer
     patch pause_timer_path(timer1)
@@ -304,7 +304,7 @@ class TimerWorkflowsTest < ActionDispatch::IntegrationTest
     assert_select "h3", text: "Completed task"
     
     # Check active timers section
-    assert_select ".timer-display", count: 1 # Only the running timer
+    assert_select "[data-countdown-timer-target='display']", count: 1 # Only the running timer
   end
 
   test "timer workflow data persistence and calculation accuracy" do

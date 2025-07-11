@@ -83,13 +83,12 @@
     <!-- Control Buttons -->
     <div class="flex justify-center space-x-4 mb-8" data-countdown-timer-target="controlButtons">
       <% if @timer.stopped? || @timer.completed? || @timer.expired? %>
-        <% if @timer.countdown? %>
+        <button type="button" class="btn-success btn-lg" data-action="click->countdown-timer#start">
+          <%= icon_with_text :play, "Start Timer", icon: { size: 5 } %>
+        </button>
+        <% if @timer.countdown? && @timer.expired? %>
           <button type="button" class="btn-primary btn-lg" data-action="click->countdown-timer#reset">
             <%= icon_with_text :refresh, "Reset Timer", icon: { size: 5 } %>
-          </button>
-        <% else %>
-          <button type="button" class="btn-success btn-lg" data-action="click->countdown-timer#start">
-            <%= icon_with_text :play, "Start Timer", icon: { size: 5 } %>
           </button>
         <% end %>
       <% elsif @timer.running? %>

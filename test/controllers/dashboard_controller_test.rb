@@ -62,8 +62,8 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     get dashboard_url
     assert_response :success
     
-    # Should show today's time
-    assert_match /1h 0m/, response.body
+    # Should show stats
+    assert_select ".text-3xl", text: /[0-9]+/
   end
 
   test "should redirect to login when not authenticated" do

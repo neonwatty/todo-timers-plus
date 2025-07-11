@@ -18,8 +18,8 @@ class TimersController < ApplicationController
     @timer.status = 'stopped'
     @timer[:tags] = params[:timer][:tags] if params[:timer][:tags].present?
     
-    # Handle duration input for countdown timers
-    if params[:timer][:duration_hours].present? || params[:timer][:duration_minutes].present? || params[:timer][:duration_seconds].present?
+    # Handle countdown timer creation
+    if params[:timer][:timer_type] == 'countdown'
       hours = params[:timer][:duration_hours].to_i
       minutes = params[:timer][:duration_minutes].to_i
       seconds = params[:timer][:duration_seconds].to_i
@@ -28,6 +28,9 @@ class TimersController < ApplicationController
       if total_seconds > 0
         @timer.target_duration = total_seconds
         @timer.remaining_duration = total_seconds
+      else
+        @timer.errors.add(:base, "Please set a duration for the countdown timer")
+        render :new, status: :unprocessable_entity and return
       end
     end
     

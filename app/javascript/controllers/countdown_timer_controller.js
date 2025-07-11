@@ -225,6 +225,10 @@ export default class extends Controller {
       if (response.ok) {
         const data = await response.json()
         this.updateTimerState(data)
+      } else {
+        console.error(`Failed to ${action} timer: ${response.status} ${response.statusText}`)
+        const text = await response.text()
+        console.error('Response:', text)
       }
     } catch (error) {
       console.error(`Failed to ${action} timer:`, error)
@@ -326,7 +330,14 @@ export default class extends Controller {
   }
   
   iconHtml(name, size) {
-    const sizeClass = `w-${size} h-${size}`
+    // Use static classes to ensure Tailwind includes them
+    const sizeClasses = {
+      3: 'w-3 h-3',
+      4: 'w-4 h-4', 
+      5: 'w-5 h-5',
+      6: 'w-6 h-6'
+    }
+    const sizeClass = sizeClasses[size] || 'w-5 h-5'
     const icons = {
       play: `<svg class="${sizeClass} mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
       pause: `<svg class="${sizeClass} mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,

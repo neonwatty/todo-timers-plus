@@ -185,15 +185,14 @@
                   <%= icon :stop, size: 4 %>
                 <% end %>
               <% else %>
-                <% if timer.countdown? %>
+                <%= button_to start_timer_path(timer), method: :patch, class: "btn-success btn-sm",
+                    data: { timer_action: "start", timer_id: timer.id } do %>
+                  <%= icon_with_text :play, "Start", icon: { size: 4 } %>
+                <% end %>
+                <% if timer.countdown? && timer.expired? %>
                   <%= button_to reset_timer_path(timer), method: :patch, class: "btn-primary btn-sm",
                       data: { timer_action: "reset", timer_id: timer.id } do %>
                     <%= icon_with_text :refresh, "Reset", icon: { size: 4 } %>
-                  <% end %>
-                <% else %>
-                  <%= button_to start_timer_path(timer), method: :patch, class: "btn-success btn-sm",
-                      data: { timer_action: "start", timer_id: timer.id } do %>
-                    <%= icon_with_text :play, "Start", icon: { size: 4 } %>
                   <% end %>
                 <% end %>
               <% end %>

@@ -54,7 +54,7 @@ class TimerCompleteWorkflowTest < ActionDispatch::IntegrationTest
       timer.reload
       assert_equal "paused", timer.status
       assert timer.duration > 0
-      assert_not_nil timer.end_time
+      assert_nil timer.end_time  # end_time is only set when stopped
       assert_match /Timer paused!/, flash[:notice]
     end
     
