@@ -40,6 +40,11 @@ class Timer < ApplicationRecord
       duration || 0
     end
   end
+  
+  # Get current duration (for tests and other uses)
+  def current_duration
+    calculate_duration
+  end
 
   def formatted_duration
     total_seconds = countdown? ? calculate_remaining_time : (duration || calculate_duration)
@@ -59,7 +64,7 @@ class Timer < ApplicationRecord
   end
 
   def expired?
-    status == 'expired'
+    status == 'expired' || (countdown? && running? && calculate_remaining_time <= 0)
   end
 
   def countdown?

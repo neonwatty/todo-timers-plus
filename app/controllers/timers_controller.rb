@@ -7,6 +7,10 @@ class TimersController < ApplicationController
   end
 
   def show
+    respond_to do |format|
+      format.html
+      format.json { render json: timer_json(@timer) }
+    end
   end
 
   def new
@@ -137,19 +141,25 @@ class TimersController < ApplicationController
   end
 
   def timer_params
-    params.require(:timer).permit(:task_name)
+    params.require(:timer).permit(:task_name, :timer_type)
   end
   
   def timer_json(timer)
     {
       id: timer.id,
+      task_name: timer.task_name,
       status: timer.status,
+      timer_type: timer.timer_type,
       start_time: timer.start_time&.iso8601,
-      remaining_duration: timer.calculate_remaining_time,
+      end_time: timer.end_time&.iso8601,
+      remaining_duration: timer.remaining_duration,
+      remaining_time: timer.calculate_remaining_time,
       target_duration: timer.target_duration,
       duration: timer.duration,
       is_countdown: timer.countdown?,
-      formatted_duration: timer.formatted_duration
+      is_expired: timer.expired?,
+      formatted_duration: timer.formatted_duration,
+      progress_percentage: timer.progress_percentage
     }
   end
 end

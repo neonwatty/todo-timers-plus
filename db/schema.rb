@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_10_184510) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_11_200456) do
   create_table "sessions", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "ip_address"
@@ -49,7 +49,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_10_184510) do
     t.integer "target_duration"
     t.integer "remaining_duration"
     t.datetime "completed_at"
+    t.string "timer_type", default: "stopwatch", null: false
     t.index ["completed_at"], name: "index_timers_on_completed_at"
+    t.index ["timer_type"], name: "index_timers_on_timer_type"
     t.index ["user_id"], name: "index_timers_on_user_id"
   end
 
