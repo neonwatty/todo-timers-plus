@@ -26,23 +26,17 @@
           required: true %>
     </div>
 
-    <% if @timer.countdown? %>
-      <div class="form-group">
-        <label class="form-label">Timer Type</label>
+    <div class="form-group">
+      <label class="form-label">Timer Type</label>
+      <% if @timer.countdown? %>
         <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center">
           <%= icon :hourglass, size: 5, class: "text-blue-600 mr-3" %>
           <div>
             <p class="font-medium text-blue-900">Countdown Timer</p>
-            <p class="text-sm text-blue-700">Target duration: <%= Timer.format_seconds(@timer.target_duration) %></p>
+            <p class="text-sm text-blue-700">Counts down from set time</p>
           </div>
         </div>
-        <p class="text-sm text-gray-500 mt-2">
-          Note: You cannot change the timer type after creation. Create a new timer if you need a different type.
-        </p>
-      </div>
-    <% else %>
-      <div class="form-group">
-        <label class="form-label">Timer Type</label>
+      <% else %>
         <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 flex items-center">
           <%= icon :clock, size: 5, class: "text-purple-600 mr-3" %>
           <div>
@@ -50,8 +44,88 @@
             <p class="text-sm text-purple-700">Counts up from zero</p>
           </div>
         </div>
+      <% end %>
+      <p class="text-sm text-gray-500 mt-2">
+        Note: You cannot change the timer type after creation.
+      </p>
+    </div>
+
+    <% if @timer.countdown? %>
+      <div class="form-group">
+        <label class="form-label">Target Duration</label>
+        <div class="flex items-center space-x-2">
+          <div class="flex-1">
+            <% hours = @timer.target_duration.to_i / 3600 %>
+            <% minutes = (@timer.target_duration.to_i % 3600) / 60 %>
+            <% seconds = @timer.target_duration.to_i % 60 %>
+            <%= number_field_tag "timer[duration_hours]", hours, 
+                class: "form-input text-center", 
+                min: 0, 
+                max: 99,
+                placeholder: "HH" %>
+            <p class="text-xs text-gray-500 text-center mt-1">Hours</p>
+          </div>
+          <span class="text-xl font-semibold text-gray-500">:</span>
+          <div class="flex-1">
+            <%= number_field_tag "timer[duration_minutes]", minutes, 
+                class: "form-input text-center", 
+                min: 0, 
+                max: 59,
+                placeholder: "MM" %>
+            <p class="text-xs text-gray-500 text-center mt-1">Minutes</p>
+          </div>
+          <span class="text-xl font-semibold text-gray-500">:</span>
+          <div class="flex-1">
+            <%= number_field_tag "timer[duration_seconds]", seconds, 
+                class: "form-input text-center", 
+                min: 0, 
+                max: 59,
+                placeholder: "SS" %>
+            <p class="text-xs text-gray-500 text-center mt-1">Seconds</p>
+          </div>
+        </div>
         <p class="text-sm text-gray-500 mt-2">
-          Note: You cannot change the timer type after creation. Create a new timer if you need a different type.
+          Adjust the target duration for this countdown timer.
+        </p>
+      </div>
+    <% end %>
+
+    <% if @timer.stopwatch? && (@timer.stopped? || @timer.completed?) %>
+      <div class="form-group">
+        <label class="form-label">Recorded Duration</label>
+        <div class="flex items-center space-x-2">
+          <div class="flex-1">
+            <% hours = @timer.duration.to_i / 3600 %>
+            <% minutes = (@timer.duration.to_i % 3600) / 60 %>
+            <% seconds = @timer.duration.to_i % 60 %>
+            <%= number_field_tag "timer[duration_hours]", hours, 
+                class: "form-input text-center", 
+                min: 0, 
+                max: 99,
+                placeholder: "HH" %>
+            <p class="text-xs text-gray-500 text-center mt-1">Hours</p>
+          </div>
+          <span class="text-xl font-semibold text-gray-500">:</span>
+          <div class="flex-1">
+            <%= number_field_tag "timer[duration_minutes]", minutes, 
+                class: "form-input text-center", 
+                min: 0, 
+                max: 59,
+                placeholder: "MM" %>
+            <p class="text-xs text-gray-500 text-center mt-1">Minutes</p>
+          </div>
+          <span class="text-xl font-semibold text-gray-500">:</span>
+          <div class="flex-1">
+            <%= number_field_tag "timer[duration_seconds]", seconds, 
+                class: "form-input text-center", 
+                min: 0, 
+                max: 59,
+                placeholder: "SS" %>
+            <p class="text-xs text-gray-500 text-center mt-1">Seconds</p>
+          </div>
+        </div>
+        <p class="text-sm text-gray-500 mt-2">
+          Adjust the recorded duration for this stopwatch timer (e.g., if you forgot to stop it).
         </p>
       </div>
     <% end %>
@@ -91,7 +165,7 @@
           <div>
             <h3 class="text-sm font-medium text-amber-900">Timer is Active</h3>
             <p class="text-sm text-amber-700 mt-1">
-              This timer is currently <%= @timer.status %>. Some fields cannot be edited while the timer is active.
+              This timer is currently <%= @timer.status %>. Duration cannot be edited while the timer is active. Stop the timer first to adjust its duration.
             </p>
           </div>
         </div>

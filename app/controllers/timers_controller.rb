@@ -68,9 +68,34 @@ class TimersController < ApplicationController
       return
     end
     
-    @timer[:tags] = params[:timer][:tags] if params[:timer].has_key?(:tags)
+    # Handle tags separately since it's not in timer_params
+    @timer[:tags] = params[:timer][:tags] if params[:timer] && params[:timer].has_key?(:tags)
     
+    # First update the timer with regular params
     if @timer.update(timer_params)
+      # Then handle duration updates if present  
+      has_duration_params = params[:timer] && (params[:timer].key?("duration_hours") || params[:timer].key?("duration_minutes") || params[:timer].key?("duration_seconds"))
+      
+      if has_duration_params
+        hours = params[:timer]["duration_hours"].to_i
+        minutes = params[:timer]["duration_minutes"].to_i  
+        seconds = params[:timer]["duration_seconds"].to_i
+        
+        total_seconds = (hours * 3600) + (minutes * 60) + seconds
+        
+        if @timer.countdown?
+          # For countdown timers, update target_duration and remaining_duration
+          # Update remaining_duration only if timer hasn't been started yet (pending, stopped, or completed)
+          should_update_remaining = @timer.status == 'pending' || @timer.stopped? || @timer.completed?
+          @timer.update!(
+            target_duration: total_seconds,
+            remaining_duration: should_update_remaining ? total_seconds : @timer.remaining_duration
+          )
+        elsif @timer.stopwatch? && (@timer.stopped? || @timer.completed?)
+          # For stopped stopwatch timers, update the recorded duration
+          @timer.update!(duration: total_seconds)
+        end
+      end
       respond_to do |format|
         format.html { redirect_to @timer, notice: 'Timer was successfully updated.' }
         format.json { render json: { success: true, notes: @timer.notes } }
