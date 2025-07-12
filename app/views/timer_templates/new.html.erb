@@ -1,0 +1,162 @@
+<% content_for :page_title, "New Timer Template" %>
+<% content_for :page_description, "Create a reusable timer configuration" %>
+
+<div class="max-w-2xl mx-auto">
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex items-center space-x-4 mb-4">
+      <%= link_to timer_templates_path, class: "text-gray-400 hover:text-gray-600" do %>
+        <%= icon :arrow_left, size: 6 %>
+      <% end %>
+      <h1 class="text-3xl font-bold text-gray-900">Create Template</h1>
+    </div>
+    <p class="text-gray-600">
+      Save this configuration as a template to quickly create similar timers in the future.
+    </p>
+  </div>
+
+  <!-- Form -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+    <%= form_with model: @timer_template, local: true, data: { controller: "template-form" } do |form| %>
+      <% if @timer_template.errors.any? %>
+        <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <h3 class="text-sm font-medium text-red-800 mb-2">Please fix the following errors:</h3>
+          <ul class="text-sm text-red-700 space-y-1">
+            <% @timer_template.errors.full_messages.each do |message| %>
+              <li>• <%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <!-- Template Name -->
+      <div class="mb-6">
+        <%= form.label :name, "Template Name", class: "form-label" %>
+        <%= form.text_field :name, 
+            class: "form-input", 
+            placeholder: "e.g., Pomodoro Session, Daily Standup, Code Review",
+            required: true %>
+        <p class="form-help">Give your template a descriptive name that you'll recognize later.</p>
+      </div>
+
+      <!-- Task Name -->
+      <div class="mb-6">
+        <%= form.label :task_name, "Default Task Name", class: "form-label" %>
+        <%= form.text_field :task_name, 
+            class: "form-input",
+            placeholder: "e.g., Focus work, Meeting, Break" %>
+        <p class="form-help">Optional: Default task name when creating timers from this template.</p>
+      </div>
+
+      <!-- Timer Type Selection -->
+      <div class="mb-6">
+        <label class="form-label">Timer Type</label>
+        <div class="mt-2 space-y-3">
+          <div class="flex items-center">
+            <%= form.radio_button :timer_type, "stopwatch", 
+                class: "form-radio", 
+                data: { action: "change->template-form#toggleTimerType" } %>
+            <%= form.label :timer_type_stopwatch, class: "ml-3 flex items-center cursor-pointer" do %>
+              <div class="flex-1">
+                <div class="flex items-center">
+                  <%= icon :clock, size: 5, class: "text-green-600 mr-2" %>
+                  <span class="text-base font-medium text-gray-900">Stopwatch</span>
+                </div>
+                <p class="text-sm text-gray-500 mt-1">Count up from zero - perfect for tracking time spent on tasks</p>
+              </div>
+            <% end %>
+          </div>
+
+          <div class="flex items-center">
+            <%= form.radio_button :timer_type, "countdown", 
+                class: "form-radio",
+                data: { action: "change->template-form#toggleTimerType" } %>
+            <%= form.label :timer_type_countdown, class: "ml-3 flex items-center cursor-pointer" do %>
+              <div class="flex-1">
+                <div class="flex items-center">
+                  <%= icon :hourglass, size: 5, class: "text-blue-600 mr-2" %>
+                  <span class="text-base font-medium text-gray-900">Countdown</span>
+                </div>
+                <p class="text-sm text-gray-500 mt-1">Count down from a set time - great for time-boxed activities</p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Duration Settings (for countdown) -->
+      <div id="duration-settings" 
+           class="mb-6 <%= 'hidden' unless @timer_template.countdown? %>"
+           data-template-form-target="durationSettings">
+        <label class="form-label">Default Duration</label>
+        <div class="mt-2">
+          <!-- Duration Input -->
+          <div class="flex items-center space-x-2 mb-4">
+            <div class="flex-1">
+              <%= number_field_tag :duration_hours, 
+                  @timer_template.target_duration ? @timer_template.target_duration / 3600 : 0,
+                  class: "form-input text-center",
+                  min: 0, max: 23, 
+                  placeholder: "0" %>
+              <label class="block text-xs text-gray-500 text-center mt-1">Hours</label>
+            </div>
+            <span class="text-gray-400 font-bold">:</span>
+            <div class="flex-1">
+              <%= number_field_tag :duration_minutes, 
+                  @timer_template.target_duration ? (@timer_template.target_duration % 3600) / 60 : 25,
+                  class: "form-input text-center",
+                  min: 0, max: 59,
+                  placeholder: "25" %>
+              <label class="block text-xs text-gray-500 text-center mt-1">Minutes</label>
+            </div>
+            <span class="text-gray-400 font-bold">:</span>
+            <div class="flex-1">
+              <%= number_field_tag :duration_seconds, 
+                  @timer_template.target_duration ? @timer_template.target_duration % 60 : 0,
+                  class: "form-input text-center",
+                  min: 0, max: 59,
+                  placeholder: "0" %>
+              <label class="block text-xs text-gray-500 text-center mt-1">Seconds</label>
+            </div>
+          </div>
+
+          <!-- Quick Duration Buttons -->
+          <div class="grid grid-cols-3 gap-2 sm:grid-cols-6">
+            <% [
+              [5, "5min"],
+              [15, "15min"], 
+              [25, "25min"],
+              [30, "30min"],
+              [45, "45min"],
+              [60, "1hr"]
+            ].each do |minutes, label| %>
+              <button type="button" 
+                      class="px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                      data-action="click->template-form#setDuration"
+                      data-minutes="<%= minutes %>">
+                <%= label %>
+              </button>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tags -->
+      <div class="mb-8">
+        <%= form.label :tags, "Tags", class: "form-label" %>
+        <%= form.text_field :tags, 
+            class: "form-input",
+            placeholder: "work, focus, meeting (comma-separated)" %>
+        <p class="form-help">Add tags to categorize this template. Separate multiple tags with commas.</p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row gap-3 sm:justify-end">
+        <%= link_to timer_templates_path, class: "btn-secondary" do %>
+          Cancel
+        <% end %>
+        <%= form.submit "Create Template", class: "btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

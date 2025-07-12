@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_11_200456) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_11_231510) do
   create_table "sessions", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "ip_address"
@@ -34,6 +34,23 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_11_200456) do
     t.datetime "updated_at", null: false
     t.index ["tag_id"], name: "index_timer_tags_on_tag_id"
     t.index ["timer_id"], name: "index_timer_tags_on_timer_id"
+  end
+
+  create_table "timer_templates", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "name", null: false
+    t.string "task_name"
+    t.string "timer_type", default: "stopwatch", null: false
+    t.integer "target_duration"
+    t.text "tags"
+    t.integer "usage_count", default: 0, null: false
+    t.datetime "last_used_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["last_used_at"], name: "index_timer_templates_on_last_used_at"
+    t.index ["usage_count"], name: "index_timer_templates_on_usage_count"
+    t.index ["user_id", "name"], name: "index_timer_templates_on_user_id_and_name", unique: true
+    t.index ["user_id"], name: "index_timer_templates_on_user_id"
   end
 
   create_table "timers", force: :cascade do |t|
@@ -66,5 +83,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_11_200456) do
   add_foreign_key "sessions", "users"
   add_foreign_key "timer_tags", "tags"
   add_foreign_key "timer_tags", "timers"
+  add_foreign_key "timer_templates", "users"
   add_foreign_key "timers", "users"
 end

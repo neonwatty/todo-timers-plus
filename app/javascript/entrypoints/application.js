@@ -199,12 +199,14 @@ class AnalyticsManager {
 document.addEventListener('DOMContentLoaded', () => {
   // TimerManager disabled - using Stimulus countdown_timer_controller instead
   // new TimerManager()
-  new AnalyticsManager()
+  // AnalyticsManager disabled - using Stimulus analytics_chart_controller instead
+  // new AnalyticsManager()
 })
 
 // Reinitialize on Turbo visits
 document.addEventListener('turbo:load', () => {
   // TimerManager disabled - using Stimulus countdown_timer_controller instead
   // new TimerManager()
-  new AnalyticsManager()
+  // AnalyticsManager disabled - using Stimulus analytics_chart_controller instead
+  // new AnalyticsManager()
 })

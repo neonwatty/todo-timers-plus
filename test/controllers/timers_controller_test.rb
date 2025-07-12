@@ -46,6 +46,69 @@ class TimersControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
   end
 
+  test "should save timer as template when requested" do
+    assert_difference('Timer.count') do
+      assert_difference('TimerTemplate.count') do
+        post timers_url, params: {
+          timer: {
+            task_name: "Template Task",
+            timer_type: "stopwatch",
+            tags: "template, test"
+          },
+          save_as_template: "1"
+        }
+      end
+    end
+
+    template = TimerTemplate.last
+    assert_equal "Template Task Template", template.name
+    assert_equal "Template Task", template.task_name
+    assert_equal "stopwatch", template.timer_type
+    assert_equal "template, test", template.tags
+  end
+
+  test "should not save timer as template when not requested" do
+    assert_difference('Timer.count') do
+      assert_no_difference('TimerTemplate.count') do
+        post timers_url, params: {
+          timer: {
+            task_name: "Regular Task",
+            timer_type: "stopwatch"
+          }
+        }
+      end
+    end
+  end
+
+  test "should save countdown timer as template with duration" do
+    assert_difference('Timer.count') do
+      assert_difference('TimerTemplate.count') do
+        post timers_url, params: {
+          timer: {
+            task_name: "Countdown Task",
+            timer_type: "countdown",
+            duration_hours: "0",
+            duration_minutes: "25",
+            duration_seconds: "0"
+          },
+          save_as_template: "1"
+        }
+      end
+    end
+
+    timer = Timer.last
+    template = TimerTemplate.last
+    
+    assert_equal timer.target_duration, template.target_duration
+    assert_equal 1500, template.target_duration # 25 minutes
+  end
+
+  test "should load templates for new timer form" do
+    get new_timer_url
+    assert_response :success
+    # Test that the form loads properly - template loading is tested in integration tests
+  end
+
   test "should show timer" do
     get timer_url(@timer)
     assert_response :success

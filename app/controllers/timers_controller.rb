@@ -15,6 +15,8 @@ class TimersController < ApplicationController
 
   def new
     @timer = Current.user.timers.build
+    @templates = Current.user.timer_templates.order(:name)
+    @popular_templates = Current.user.timer_templates.popular.limit(3)
   end
 
   def create
@@ -34,13 +36,20 @@ class TimersController < ApplicationController
         @timer.remaining_duration = total_seconds
       else
         @timer.errors.add(:base, "Please set a duration for the countdown timer")
+        load_templates_for_form
         render :new, status: :unprocessable_entity and return
       end
     end
     
     if @timer.save
+      # Save as template if requested
+      if params[:save_as_template] == '1'
+        create_template_from_timer(@timer)
+      end
+      
       redirect_to @timer, notice: 'Timer was successfully created.'
     else
+      load_templates_for_form
       render :new, status: :unprocessable_entity
     end
   end
@@ -187,5 +196,32 @@ class TimersController < ApplicationController
     )
     
     json
+  end
+
+  def load_templates_for_form
+    @templates = Current.user.timer_templates.order(:name)
+    @popular_templates = Current.user.timer_templates.popular.limit(3)
+  end
+
+  def create_template_from_timer(timer)
+    template_attributes = {
+      name: "#{timer.task_name} Template",
+      task_name: timer.task_name,
+      timer_type: timer.timer_type,
+      tags: timer[:tags] # Use column access, not association
+    }
+    
+    # Include duration for countdown timers
+    if timer.countdown? && timer.target_duration.present?
+      template_attributes[:target_duration] = timer.target_duration
+    end
+    
+    template = Current.user.timer_templates.build(template_attributes)
+    
+    if template.save
+      flash[:notice] = (flash[:notice] || "Timer was successfully created.") + " Template '#{template.name}' was also created!"
+    else
+      flash[:alert] = "Timer created, but failed to save template: #{template.errors.full_messages.join(', ')}"
+    end
   end
 end

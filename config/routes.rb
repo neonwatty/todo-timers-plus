@@ -1,4 +1,9 @@
 Rails.application.routes.draw do
+  resources :timer_templates do
+    member do
+      post :create_timer # Create timer from template
+    end
+  end
   get "analytics", to: "analytics#index"
   root "dashboard#index"
   

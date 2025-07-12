@@ -89,6 +89,65 @@
           </div>
           <div class="ml-5 w-0 flex-1">
             <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Current Streak</dt>
+              <dd class="text-lg font-medium text-gray-900">
+                <%= @current_streak %> <%= 'day'.pluralize(@current_streak) %>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Additional stats row -->
+<div class="mb-8">
+  <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <%= icon :trophy, size: 8, class: "text-yellow-600" %>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Longest Streak</dt>
+              <dd class="text-lg font-medium text-gray-900">
+                <%= @longest_streak %> <%= 'day'.pluralize(@longest_streak) %>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <%= icon :chart, size: 8, class: "text-indigo-600" %>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Productivity Score</dt>
+              <dd class="text-lg font-medium text-gray-900">
+                <%= @productivity_score %><span class="text-sm text-gray-500">/200</span>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <%= icon :calendar, size: 8, class: "text-rose-600" %>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
               <dt class="text-sm font-medium text-gray-500 truncate">Most Productive</dt>
               <dd class="text-lg font-medium text-gray-900">
                 <% case @period %>
@@ -112,49 +171,53 @@
 </div>
 
 <!-- Charts -->
-<div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
-  <!-- Time distribution chart -->
-  <div class="bg-white shadow rounded-lg p-6">
-    <h3 class="text-lg font-medium text-gray-900 mb-4">Time Distribution</h3>
-    <div class="h-64 sm:h-80 md:h-64">
-      <% 
-        case @period
-        when 'day'
-          chart_data = {
-            labels: @analytics[:hourly_breakdown].map { |h| h[:label] },
-            values: @analytics[:hourly_breakdown].map { |h| h[:total_duration] / 60 }
-          }
-        when 'week'
-          chart_data = {
-            labels: @analytics[:daily_breakdown].map { |d| d[:day_name] },
-            values: @analytics[:daily_breakdown].map { |d| d[:total_duration] / 60 }
-          }
-        else
-          chart_data = {
-            labels: @analytics[:weekly_breakdown].map { |w| w[:week_label] },
-            values: @analytics[:weekly_breakdown].map { |w| w[:total_duration] / 60 }
-          }
-        end
-      %>
-      <canvas id="timeChart" data-chart-data="<%= chart_data.to_json %>"></canvas>
-    </div>
-  </div>
-
-  <!-- Top tasks chart -->
-  <% if @analytics[:top_tasks].present? && @analytics[:top_tasks].any? %>
+<div data-controller="analytics-chart"
+     data-analytics-chart-time-data-value="<%= @time_chart_data.to_json %>"
+     data-analytics-chart-task-data-value="<%= @task_chart_data.to_json %>"
+     data-analytics-chart-tag-data-value="<%= @tag_chart_data.to_json %>"
+     data-analytics-chart-period-value="<%= @period %>">
+  
+  <div class="grid grid-cols-1 gap-8 lg:grid-cols-2 mb-8">
+    <!-- Time distribution chart -->
     <div class="bg-white shadow rounded-lg p-6">
-      <h3 class="text-lg font-medium text-gray-900 mb-4">Top Tasks</h3>
       <div class="h-64 sm:h-80 md:h-64">
-        <% 
-          chart_data = {
-            labels: @analytics[:top_tasks].map { |task, _| task },
-            values: @analytics[:top_tasks].map { |_, duration| duration / 60 }
-          }
-        %>
-        <canvas id="tasksChart" data-chart-data="<%= chart_data.to_json %>"></canvas>
+        <canvas data-analytics-chart-target="timeDistribution"></canvas>
+      </div>
+    </div>
+
+    <!-- Top tasks chart -->
+    <% if @task_chart_data[:labels].any? %>
+      <div class="bg-white shadow rounded-lg p-6">
+        <div class="h-64 sm:h-80 md:h-64">
+          <canvas data-analytics-chart-target="topTasks"></canvas>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  
+  <!-- Tag breakdown chart -->
+  <% if @tag_chart_data[:labels].any? %>
+    <div class="grid grid-cols-1 mb-8">
+      <div class="bg-white shadow rounded-lg p-6">
+        <div class="h-64 sm:h-80">
+          <canvas data-analytics-chart-target="tagBreakdown"></canvas>
+        </div>
       </div>
     </div>
   <% end %>
+</div>
+
+<!-- Activity Calendar Heatmap -->
+<div class="mb-8">
+  <div class="bg-white shadow rounded-lg p-6">
+    <h3 class="text-lg font-medium text-gray-900 mb-4">Activity Calendar</h3>
+    <div class="overflow-x-auto">
+      <div data-controller="calendar-heatmap"
+           data-calendar-heatmap-data-value="<%= @streak_data[:calendar_data].to_json %>"
+           data-calendar-heatmap-target="calendar"
+           class="inline-block"></div>
+    </div>
+  </div>
 </div>
 
 <!-- Detailed breakdown -->

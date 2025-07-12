@@ -40,9 +40,9 @@ class AnalyticsControllerTest < ActionDispatch::IntegrationTest
     assert_match /Avg per Task/, response.body
     assert_match /Most Productive/, response.body
     
-    # Check for charts
-    assert_select "#timeChart"
-    assert_select "#tasksChart"
+    # Check for charts using data attributes
+    assert_select "canvas[data-analytics-chart-target='timeDistribution']"
+    assert_select "canvas[data-analytics-chart-target='topTasks']"
   end
 
   test "should show analytics for day period" do
@@ -50,7 +50,7 @@ class AnalyticsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     
     # Should show time distribution
-    assert_select "canvas#timeChart"
+    assert_select "canvas[data-analytics-chart-target='timeDistribution']"
   end
 
   test "should show analytics for month period" do

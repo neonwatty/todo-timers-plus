@@ -1,0 +1,129 @@
+<% content_for :page_title, "Timer Templates" %>
+<% content_for :page_description, "Manage your reusable timer configurations" %>
+
+<!-- Header with action buttons -->
+<div class="mb-8 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-900">Timer Templates</h2>
+      <p class="mt-1 text-gray-600">Create reusable timer configurations for your common tasks</p>
+    </div>
+    <div class="mt-4 sm:mt-0 flex gap-3">
+      <%= link_to new_timer_path, class: "btn-secondary" do %>
+        <%= icon_with_text :clock, "New Timer", icon: { size: 4 } %>
+      <% end %>
+      <%= link_to new_timer_template_path, class: "btn-primary" do %>
+        <%= icon_with_text :plus, "New Template", icon: { size: 4 } %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<!-- Quick stats -->
+<div class="mb-8">
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div class="flex items-center">
+        <div class="flex-shrink-0 p-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg">
+          <%= icon :template, size: 6, class: "text-blue-600" %>
+        </div>
+        <div class="ml-4 flex-1">
+          <p class="text-sm font-medium text-gray-600">Total Templates</p>
+          <p class="mt-1 text-2xl font-bold text-gray-900"><%= @all_templates.count %></p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div class="flex items-center">
+        <div class="flex-shrink-0 p-3 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
+          <%= icon :lightning, size: 6, class: "text-green-600" %>
+        </div>
+        <div class="ml-4 flex-1">
+          <p class="text-sm font-medium text-gray-600">Most Used</p>
+          <p class="mt-1 text-lg font-bold text-gray-900">
+            <%= @popular_templates.first&.name || "—" %>
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div class="flex items-center">
+        <div class="flex-shrink-0 p-3 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg">
+          <%= icon :refresh, size: 6, class: "text-purple-600" %>
+        </div>
+        <div class="ml-4 flex-1">
+          <p class="text-sm font-medium text-gray-600">Total Usage</p>
+          <p class="mt-1 text-2xl font-bold text-gray-900">
+            <%= @all_templates.sum(:usage_count) %>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% if @all_templates.any? %>
+  <!-- Popular Templates -->
+  <% if @popular_templates.any? %>
+    <div class="mb-8">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        <%= icon :fire, size: 5, class: "text-orange-500 mr-2" %>
+        Most Popular
+      </h3>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <% @popular_templates.each do |template| %>
+          <%= render 'timer_template_card', template: template, show_usage: true %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Recently Used Templates -->
+  <% if @recent_templates.any? %>
+    <div class="mb-8">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        <%= icon :clock, size: 5, class: "text-blue-500 mr-2" %>
+        Recently Used
+      </h3>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <% @recent_templates.each do |template| %>
+          <%= render 'timer_template_card', template: template, show_last_used: true %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- All Templates -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+    <div class="px-6 py-4 border-b border-gray-100">
+      <h3 class="text-lg font-semibold text-gray-900">All Templates</h3>
+    </div>
+    <div id="templates_list" class="divide-y divide-gray-200">
+      <% @all_templates.each do |template| %>
+        <%= render 'timer_template_card', template: template, compact: true %>
+      <% end %>
+    </div>
+  </div>
+
+<% else %>
+  <!-- Empty state -->
+  <div class="text-center py-16">
+    <div class="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full mb-6">
+      <%= icon :template, size: 12, class: "text-gray-400" %>
+    </div>
+    <h3 class="text-2xl font-semibold text-gray-900 mb-3">No templates yet</h3>
+    <p class="text-gray-600 mb-8 max-w-md mx-auto">
+      Create your first template to save common timer configurations and speed up your workflow!
+    </p>
+    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+      <%= link_to new_timer_template_path, class: "btn-primary" do %>
+        <%= icon_with_text :plus, "Create Template", icon: { size: 4 } %>
+      <% end %>
+      <%= link_to new_timer_path, class: "btn-secondary" do %>
+        <%= icon_with_text :clock, "Create Timer First", icon: { size: 4 } %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

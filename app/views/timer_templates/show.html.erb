@@ -1,0 +1,149 @@
+<% content_for :page_title, @timer_template.name %>
+<% content_for :page_description, "Timer template details and usage statistics" %>
+
+<div class="max-w-4xl mx-auto">
+  <!-- Header -->
+  <div class="mb-8 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <%= link_to timer_templates_path, class: "text-gray-400 hover:text-gray-600" do %>
+          <%= icon :arrow_left, size: 6 %>
+        <% end %>
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900"><%= @timer_template.name %></h1>
+          <p class="text-gray-600 mt-1">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium 
+              <%= @timer_template.countdown? ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800' %>">
+              <%= icon(@timer_template.countdown? ? :hourglass : :clock, size: 4, class: "mr-1") %>
+              <%= @timer_template.timer_type.capitalize %>
+              <% if @timer_template.countdown? && @timer_template.target_duration.present? %>
+                - <%= @timer_template.formatted_duration %>
+              <% end %>
+            </span>
+          </p>
+        </div>
+      </div>
+      
+      <div class="flex space-x-3">
+        <%= button_to create_timer_timer_template_path(@timer_template), 
+            method: :post,
+            class: "btn-success" do %>
+          <%= icon_with_text :play, "Use Template", icon: { size: 5 } %>
+        <% end %>
+        
+        <%= link_to edit_timer_template_path(@timer_template), class: "btn-secondary" do %>
+          <%= icon_with_text :edit, "Edit", icon: { size: 4 } %>
+        <% end %>
+        
+        <%= button_to timer_template_path(@timer_template), 
+            method: :delete,
+            data: { 
+              turbo_method: :delete,
+              turbo_confirm: "Are you sure you want to delete this template?" 
+            },
+            class: "btn-danger" do %>
+          <%= icon :trash, size: 4 %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Template Details -->
+    <div class="lg:col-span-2">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-6">Template Details</h2>
+        
+        <div class="space-y-4">
+          <% if @timer_template.task_name.present? %>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Default Task Name</dt>
+              <dd class="mt-1 text-lg text-gray-900"><%= @timer_template.task_name %></dd>
+            </div>
+          <% end %>
+          
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Timer Type</dt>
+            <dd class="mt-1 flex items-center">
+              <%= icon(@timer_template.countdown? ? :hourglass : :clock, size: 5, class: "mr-2 text-gray-600") %>
+              <span class="text-lg text-gray-900"><%= @timer_template.timer_type.capitalize %></span>
+            </dd>
+          </div>
+          
+          <% if @timer_template.countdown? && @timer_template.target_duration.present? %>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Default Duration</dt>
+              <dd class="mt-1 text-lg text-gray-900"><%= @timer_template.formatted_duration %></dd>
+            </div>
+          <% end %>
+          
+          <% if @timer_template.parse_tags.any? %>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Tags</dt>
+              <dd class="mt-2 flex flex-wrap gap-2">
+                <% @timer_template.parse_tags.each do |tag| %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                    #<%= tag %>
+                  </span>
+                <% end %>
+              </dd>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Usage Statistics -->
+    <div class="space-y-6">
+      <!-- Usage Stats -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Usage Statistics</h3>
+        
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-medium text-gray-500">Times Used</span>
+            <span class="text-2xl font-bold text-gray-900"><%= @timer_template.usage_count %></span>
+          </div>
+          
+          <% if @timer_template.last_used_at.present? %>
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium text-gray-500">Last Used</span>
+              <span class="text-sm text-gray-900">
+                <%= time_ago_in_words(@timer_template.last_used_at) %> ago
+              </span>
+            </div>
+          <% end %>
+          
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-medium text-gray-500">Created</span>
+            <span class="text-sm text-gray-900">
+              <%= time_ago_in_words(@timer_template.created_at) %> ago
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200 p-6">
+        <h3 class="text-lg font-semibold text-blue-900 mb-4">Quick Actions</h3>
+        
+        <div class="space-y-3">
+          <%= button_to create_timer_timer_template_path(@timer_template), 
+              method: :post,
+              class: "btn-primary w-full" do %>
+            <%= icon_with_text :play, "Create Timer from Template", icon: { size: 4 } %>
+          <% end %>
+          
+          <%= link_to new_timer_template_path(from_timer_template: @timer_template.id), 
+              class: "btn-secondary w-full" do %>
+            <%= icon_with_text :copy, "Duplicate Template", icon: { size: 4 } %>
+          <% end %>
+          
+          <%= link_to timer_templates_path, class: "btn-secondary w-full" do %>
+            <%= icon_with_text :list, "All Templates", icon: { size: 4 } %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -26,6 +26,8 @@ module ActiveSupport
           ip_address: "127.0.0.1"
         )
         Current.session = user_session
+        # Also set the cookie for proper integration
+        cookies.signed[:session_id] = { value: user_session.id, httponly: true, same_site: :lax }
       end
     end
 

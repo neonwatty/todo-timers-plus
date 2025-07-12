@@ -2,6 +2,7 @@ class User < ApplicationRecord
   has_secure_password
   has_many :sessions, dependent: :destroy
   has_many :timers, dependent: :destroy
+  has_many :timer_templates, dependent: :destroy
   has_many :tags, -> { distinct }, through: :timers
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
@@ -47,6 +48,111 @@ class User < ApplicationRecord
       weekly_analytics
     end
   end
+  
+  # Get analytics by tags
+  def tag_analytics(period)
+    case period.to_s
+    when 'day'
+      start_date = Date.current.beginning_of_day
+      end_date = Date.current.end_of_day
+    when 'week'
+      start_date = 1.week.ago.beginning_of_day
+      end_date = Time.current.end_of_day
+    when 'month'
+      start_date = 1.month.ago.beginning_of_day
+      end_date = Time.current.end_of_day
+    else
+      start_date = 1.week.ago.beginning_of_day
+      end_date = Time.current.end_of_day
+    end
+    
+    # Get all timers in the period
+    period_timers = timers.by_date_range(start_date, end_date)
+    
+    # Aggregate by tags
+    tag_durations = Hash.new(0)
+    tag_counts = Hash.new(0)
+    
+    period_timers.find_each do |timer|
+      tags = timer.parse_tags
+      duration = timer.duration || 0
+      if tags.empty?
+        tag_durations["Untagged"] += duration
+        tag_counts["Untagged"] += 1
+      else
+        tags.each do |tag|
+          tag_durations[tag] += duration
+          tag_counts[tag] += 1
+        end
+      end
+    end
+    
+    # Format for chart
+    tag_durations.map do |tag, duration|
+      {
+        name: tag,
+        duration: duration,
+        count: tag_counts[tag]
+      }
+    end.sort_by { |t| -t[:duration] }.first(10)
+  end
+  
+  # Calculate streak data for user
+  def calculate_streak_data
+    today = Date.current
+    dates_with_timers = timers.pluck(:created_at).map(&:to_date).uniq.sort
+    
+    return { current_streak: 0, longest_streak: 0, calendar_data: {} } if dates_with_timers.empty?
+    
+    # Calculate current streak
+    current_streak = 0
+    date = today
+    while dates_with_timers.include?(date)
+      current_streak += 1
+      date -= 1.day
+    end
+    
+    # Calculate longest streak
+    longest_streak = 0
+    temp_streak = 0
+    last_date = nil
+    
+    dates_with_timers.each do |date|
+      if last_date.nil? || date == last_date + 1.day
+        temp_streak += 1
+        longest_streak = [longest_streak, temp_streak].max
+      else
+        temp_streak = 1
+      end
+      last_date = date
+    end
+    
+    # Generate calendar data for the last 3 months using efficient query
+    calendar_data = {}
+    timer_stats = timers
+      .where(created_at: 90.days.ago.beginning_of_day..today.end_of_day)
+      .group(Arel.sql("DATE(created_at)"))
+      .pluck(Arel.sql("DATE(created_at), COUNT(*), SUM(duration)"))
+    
+    # Initialize all dates with zero values
+    90.days.ago.to_date.upto(today) do |date|
+      calendar_data[date.to_s] = { count: 0, duration: 0 }
+    end
+    
+    # Fill in actual data
+    timer_stats.each do |date, count, duration|
+      calendar_data[date.to_s] = {
+        count: count,
+        duration: duration || 0
+      }
+    end
+    
+    {
+      current_streak: current_streak,
+      longest_streak: longest_streak,
+      calendar_data: calendar_data
+    }
+  end
 
   private
 
@@ -75,9 +181,17 @@ class User < ApplicationRecord
     start_date = 1.month.ago.beginning_of_day
     end_date = Time.current.end_of_day
     
+    # Use SQL to calculate durations efficiently
+    base_query = timers.by_date_range(start_date, end_date)
+    
+    # Calculate total time using SQL
+    total_time = base_query
+      .where.not(duration: nil)
+      .sum(:duration)
+    
     {
-      total_time: timers.by_date_range(start_date, end_date).sum(&:calculate_duration),
-      total_tasks: timers.by_date_range(start_date, end_date).count,
+      total_time: total_time,
+      total_tasks: base_query.count,
       weekly_breakdown: (0..3).map do |weeks_ago|
         week_start = weeks_ago.weeks.ago.beginning_of_week
         week_end = weeks_ago.weeks.ago.end_of_week
@@ -85,7 +199,7 @@ class User < ApplicationRecord
         {
           week_start: week_start,
           week_label: "Week of #{week_start.strftime('%b %d')}",
-          total_duration: week_timers.sum(&:calculate_duration),
+          total_duration: week_timers.where.not(duration: nil).sum(:duration),
           task_count: week_timers.count
         }
       end.reverse,

@@ -1,8 +1,119 @@
 <% content_for :page_title, "New Timer" %>
 <% content_for :page_description, "Create a new timer to track your time" %>
 
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 max-w-2xl mx-auto">
-  <%= form_with model: @timer, local: true, class: "space-y-6" do |form| %>
+<div class="max-w-2xl mx-auto space-y-6">
+  <!-- Template Selection Section -->
+  <% if @templates.any? %>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-900">Start from Template</h3>
+        <button type="button" 
+                data-action="click->timer-form#toggleTemplateSection"
+                class="text-sm text-blue-600 hover:text-blue-700 font-medium">
+          Use Template
+        </button>
+      </div>
+      
+      <div id="template-section" 
+           class="hidden"
+           data-timer-form-target="templateSection">
+        
+        <!-- Popular Templates (if any) -->
+        <% if @popular_templates.any? %>
+          <div class="mb-6">
+            <h4 class="text-sm font-medium text-gray-700 mb-3 flex items-center">
+              <%= icon :fire, size: 4, class: "text-orange-500 mr-1" %>
+              Popular Templates
+            </h4>
+            <div class="grid grid-cols-1 gap-2">
+              <% @popular_templates.each do |template| %>
+                <button type="button"
+                        class="p-3 text-left border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors"
+                        data-action="click->timer-form#selectTemplate"
+                        data-template="<%= {
+                          name: template.name,
+                          task_name: template.task_name,
+                          timer_type: template.timer_type,
+                          target_duration: template.target_duration,
+                          tags: template.tags
+                        }.to_json %>">
+                  <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                      <div class="flex items-center space-x-2">
+                        <span class="font-medium text-gray-900"><%= template.name %></span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium 
+                          <%= template.countdown? ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800' %>">
+                          <%= icon(template.countdown? ? :hourglass : :clock, size: 3, class: "mr-1") %>
+                          <%= template.timer_type.capitalize %>
+                        </span>
+                      </div>
+                      <% if template.task_name.present? %>
+                        <p class="text-sm text-gray-600 mt-1"><%= template.task_name %></p>
+                      <% end %>
+                    </div>
+                    <div class="text-xs text-gray-500">
+                      <%= template.usage_count %> uses
+                    </div>
+                  </div>
+                </button>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- All Templates -->
+        <div>
+          <h4 class="text-sm font-medium text-gray-700 mb-3">All Templates</h4>
+          <div class="max-h-48 overflow-y-auto space-y-2">
+            <% @templates.each do |template| %>
+              <button type="button"
+                      class="w-full p-3 text-left border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors"
+                      data-action="click->timer-form#selectTemplate"
+                      data-template="<%= {
+                        name: template.name,
+                        task_name: template.task_name,
+                        timer_type: template.timer_type,
+                        target_duration: template.target_duration,
+                        tags: template.tags
+                      }.to_json %>">
+                <div class="flex items-center justify-between">
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center space-x-2">
+                      <span class="font-medium text-gray-900 truncate"><%= template.name %></span>
+                      <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium 
+                        <%= template.countdown? ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800' %>">
+                        <%= template.timer_type.capitalize %>
+                      </span>
+                    </div>
+                    <% if template.task_name.present? %>
+                      <p class="text-sm text-gray-600 mt-1 truncate"><%= template.task_name %></p>
+                    <% end %>
+                  </div>
+                </div>
+              </button>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-gray-200 flex gap-3">
+          <button type="button" 
+                  data-action="click->timer-form#clearTemplate"
+                  class="btn-secondary btn-sm">
+            Clear Form
+          </button>
+          <button type="button" 
+                  data-action="click->timer-form#toggleTemplateSection"
+                  class="btn-secondary btn-sm">
+            Close Templates
+          </button>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Timer Form -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+    <%= form_with model: @timer, local: true, class: "space-y-6", data: { controller: "timer-form" } do |form| %>
     <% if @timer.errors.any? %>
       <div class="rounded-md bg-red-50 p-4">
         <div class="text-sm text-red-700">
@@ -23,7 +134,8 @@
       <%= form.text_field :task_name, 
           class: "form-input",
           placeholder: "e.g., Work on project proposal",
-          required: true %>
+          required: true,
+          data: { timer_form_target: "taskName" } %>
       <p class="text-sm text-gray-500">
         Give your timer a descriptive name so you can track what you worked on.
       </p>
@@ -33,7 +145,13 @@
       <label class="form-label">Timer Type</label>
       <div class="grid grid-cols-2 gap-4">
         <label class="relative flex cursor-pointer rounded-lg border border-gray-300 bg-white p-4 shadow-sm focus:outline-none hover:border-blue-500 transition-colors">
-          <%= form.radio_button :timer_type, "stopwatch", class: "sr-only", checked: true, onclick: "document.getElementById('duration-picker').classList.add('hidden')" %>
+          <%= form.radio_button :timer_type, "stopwatch", 
+              class: "sr-only", 
+              checked: true,
+              data: { 
+                timer_form_target: "timerTypeStopwatch",
+                action: "change->timer-form#toggleTimerType"
+              } %>
           <div class="flex flex-1">
             <div class="flex flex-col">
               <span class="block text-sm font-medium text-gray-900">
@@ -48,7 +166,12 @@
         </label>
         
         <label class="relative flex cursor-pointer rounded-lg border border-gray-300 bg-white p-4 shadow-sm focus:outline-none hover:border-blue-500 transition-colors">
-          <%= form.radio_button :timer_type, "countdown", class: "sr-only", onclick: "document.getElementById('duration-picker').classList.remove('hidden')" %>
+          <%= form.radio_button :timer_type, "countdown", 
+              class: "sr-only",
+              data: { 
+                timer_form_target: "timerTypeCountdown",
+                action: "change->timer-form#toggleTimerType"
+              } %>
           <div class="flex flex-1">
             <div class="flex flex-col">
               <span class="block text-sm font-medium text-gray-900">
@@ -64,7 +187,9 @@
       </div>
     </div>
 
-    <div id="duration-picker" class="form-group hidden">
+    <div id="duration-picker" 
+         class="form-group hidden"
+         data-timer-form-target="durationPicker">
       <label class="form-label">Duration</label>
       <div class="flex items-center space-x-2">
         <div class="flex-1">
@@ -72,7 +197,8 @@
               class: "form-input text-center", 
               min: 0, 
               max: 99,
-              placeholder: "HH" %>
+              placeholder: "HH",
+              data: { timer_form_target: "durationHours" } %>
           <p class="text-xs text-gray-500 text-center mt-1">Hours</p>
         </div>
         <span class="text-xl font-semibold text-gray-500">:</span>
@@ -81,7 +207,8 @@
               class: "form-input text-center", 
               min: 0, 
               max: 59,
-              placeholder: "MM" %>
+              placeholder: "MM",
+              data: { timer_form_target: "durationMinutes" } %>
           <p class="text-xs text-gray-500 text-center mt-1">Minutes</p>
         </div>
         <span class="text-xl font-semibold text-gray-500">:</span>
@@ -90,19 +217,41 @@
               class: "form-input text-center", 
               min: 0, 
               max: 59,
-              placeholder: "SS" %>
+              placeholder: "SS",
+              data: { timer_form_target: "durationSeconds" } %>
           <p class="text-xs text-gray-500 text-center mt-1">Seconds</p>
         </div>
       </div>
       
       <div class="mt-3 flex flex-wrap gap-2">
-        <button type="button" onclick="setDuration(5)" class="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">5 min</button>
-        <button type="button" onclick="setDuration(10)" class="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">10 min</button>
-        <button type="button" onclick="setDuration(15)" class="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">15 min</button>
-        <button type="button" onclick="setDuration(25)" class="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">25 min</button>
-        <button type="button" onclick="setDuration(30)" class="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">30 min</button>
-        <button type="button" onclick="setDuration(45)" class="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">45 min</button>
-        <button type="button" onclick="setDuration(60)" class="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">1 hour</button>
+        <button type="button" 
+                data-action="click->timer-form#setDuration"
+                data-minutes="5"
+                class="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">5 min</button>
+        <button type="button" 
+                data-action="click->timer-form#setDuration"
+                data-minutes="10"
+                class="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">10 min</button>
+        <button type="button" 
+                data-action="click->timer-form#setDuration"
+                data-minutes="15"
+                class="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">15 min</button>
+        <button type="button" 
+                data-action="click->timer-form#setDuration"
+                data-minutes="25"
+                class="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">25 min</button>
+        <button type="button" 
+                data-action="click->timer-form#setDuration"
+                data-minutes="30"
+                class="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">30 min</button>
+        <button type="button" 
+                data-action="click->timer-form#setDuration"
+                data-minutes="45"
+                class="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">45 min</button>
+        <button type="button" 
+                data-action="click->timer-form#setDuration"
+                data-minutes="60"
+                class="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">1 hour</button>
       </div>
     </div>
 
@@ -113,10 +262,26 @@
       <% end %>
       <%= form.text_field :tags, 
           class: "form-input",
-          placeholder: "e.g., work, project, client-abc" %>
+          placeholder: "e.g., work, project, client-abc",
+          data: { timer_form_target: "tags" } %>
       <p class="text-sm text-gray-500">
         Separate multiple tags with commas. Use tags to categorize and filter your timers.
       </p>
+    </div>
+
+    <!-- Save as Template Option -->
+    <div class="form-group">
+      <div class="flex items-center">
+        <%= check_box_tag "save_as_template", "1", false, 
+            class: "form-checkbox",
+            data: { timer_form_target: "saveAsTemplate" } %>
+        <%= label_tag "save_as_template", class: "ml-3 text-sm font-medium text-gray-700" do %>
+          Save this configuration as a template
+          <span class="block text-xs text-gray-500 font-normal">
+            Quickly create similar timers in the future
+          </span>
+        <% end %>
+      </div>
     </div>
 
     <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-5 border border-blue-200">
@@ -151,32 +316,5 @@
       <% end %>
     </div>
   <% end %>
+  </div>
 </div>
-
-<script>
-  function setDuration(minutes) {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    
-    document.querySelector('input[name="timer[duration_hours]"]').value = hours;
-    document.querySelector('input[name="timer[duration_minutes]"]').value = mins;
-    document.querySelector('input[name="timer[duration_seconds]"]').value = 0;
-  }
-  
-  // Make radio buttons visually active
-  document.querySelectorAll('input[name="timer[timer_type]"]').forEach(radio => {
-    radio.addEventListener('change', function() {
-      // Remove active styling from all
-      document.querySelectorAll('label.relative').forEach(label => {
-        label.classList.remove('border-blue-500', 'ring-2', 'ring-blue-500');
-      });
-      // Add active styling to selected
-      if (this.checked) {
-        this.closest('label').classList.add('border-blue-500', 'ring-2', 'ring-blue-500');
-      }
-    });
-  });
-  
-  // Initialize the first radio button as selected
-  document.querySelector('input[name="timer[timer_type]"]:checked')?.closest('label').classList.add('border-blue-500', 'ring-2', 'ring-blue-500');
-</script>

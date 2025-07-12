@@ -1,0 +1,30 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  name: "Pomodoro Session"
+  task_name: "Focus work"
+  timer_type: "countdown"
+  target_duration: 1500  # 25 minutes
+  tags: "focus, work, pomodoro"
+  usage_count: 5
+  last_used_at: <%= 2.days.ago %>
+
+two:
+  user: two
+  name: "Daily Standup"
+  task_name: "Team meeting"
+  timer_type: "countdown"
+  target_duration: 900   # 15 minutes
+  tags: "meeting, standup, team"
+  usage_count: 3
+  last_used_at: <%= 1.week.ago %>
+
+three:
+  user: one
+  name: "Code Review"
+  task_name: "Reviewing code"
+  timer_type: "stopwatch"
+  tags: "code, review, development"
+  usage_count: 8
+  last_used_at: <%= 1.day.ago %>
