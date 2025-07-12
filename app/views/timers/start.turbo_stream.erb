@@ -9,3 +9,9 @@
 <%= turbo_stream.replace dom_id(@timer, :dashboard_active) do %>
   <%= render 'dashboard_active_timer', timer: @timer %>
 <% end %>
+
+<% # Refresh the active timers section %>
+<% @active_timers = Current.user.timers.active %>
+<%= turbo_stream.replace "active_timers_section" do %>
+  <%= render 'active_timers_section', active_timers: @active_timers %>
+<% end %>

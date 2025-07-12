@@ -34,9 +34,9 @@ class Timer < ApplicationRecord
     return 0 unless start_time
     
     if end_time
-      (end_time - start_time).to_i
+      [(end_time - start_time).to_i, 0].max
     elsif running?
-      (Time.current - start_time).to_i
+      [(Time.current - start_time).to_i, 0].max
     else
       duration || 0
     end
@@ -160,16 +160,26 @@ class Timer < ApplicationRecord
     if running?
       if countdown?
         # Store remaining time when pausing countdown
+        calculated_remaining = calculate_remaining_time
+        calculated_duration = calculate_duration
+        
+        # Ensure values are non-negative
+        calculated_remaining = [calculated_remaining, 0].max
+        calculated_duration = [calculated_duration, 0].max
+        
         update!(
           status: 'paused',
-          remaining_duration: calculate_remaining_time,
-          duration: calculate_duration
+          remaining_duration: calculated_remaining,
+          duration: calculated_duration
         )
       else
         # For stopwatch timers
+        calculated_duration = calculate_duration
+        calculated_duration = [calculated_duration, 0].max
+        
         update!(
           status: 'paused',
-          duration: calculate_duration
+          duration: calculated_duration
         )
       end
     end
@@ -197,10 +207,13 @@ class Timer < ApplicationRecord
 
   def stop!
     if running? || paused?
+      calculated_duration = calculate_duration
+      calculated_duration = [calculated_duration, 0].max
+      
       update!(
         status: 'stopped',
         end_time: Time.current,
-        duration: calculate_duration
+        duration: calculated_duration
       )
     end
   end

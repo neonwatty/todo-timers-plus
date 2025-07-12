@@ -16,25 +16,7 @@
   </div>
 </div>
 
-<!-- Active timers section -->
-<% if @active_timers.any? %>
-  <div class="mb-8">
-    <div class="flex items-center justify-between mb-4">
-      <h3 class="text-xl font-semibold text-gray-900 flex items-center">
-        <%= icon :play, size: 6, class: "text-green-600 mr-2" %>
-        Active Timers
-      </h3>
-      <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-        <%= @active_timers.count %> <%= 'timer'.pluralize(@active_timers.count) %>
-      </span>
-    </div>
-    <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-      <% @active_timers.each do |timer| %>
-        <%= render 'timer_card', timer: timer %>
-      <% end %>
-    </div>
-  </div>
-<% end %>
+<%= render 'active_timers_section', active_timers: @active_timers %>
 
 <!-- All timers list -->
 <div class="bg-white rounded-xl shadow-sm border border-gray-100">
