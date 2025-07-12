@@ -1,4 +1,5 @@
 class TimerTemplatesController < ApplicationController
+  include ActionView::RecordIdentifier
   before_action :set_timer_template, only: [:show, :edit, :update, :destroy, :create_timer]
 
   def index

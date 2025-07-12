@@ -74,7 +74,7 @@
       <div class="flex items-center space-x-2">
         <%= render 'timers/timer_controls_compact', timer: timer %>
         
-        <%= link_to edit_timer_path(timer), class: "btn-secondary btn-sm" do %>
+        <%= link_to edit_timer_path(timer), class: "btn-secondary btn-sm", data: { turbo_frame: "_top" } do %>
           <%= icon :edit, size: 4 %>
         <% end %>
         

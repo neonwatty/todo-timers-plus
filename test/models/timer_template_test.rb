@@ -187,6 +187,46 @@ class TimerTemplateTest < ActiveSupport::TestCase
     assert @template.last_used_at > original_time
   end
 
+  # Notes functionality tests
+  test "should validate notes length" do
+    @template.notes = "a" * 2000
+    assert @template.valid?
+    
+    @template.notes = "a" * 2001
+    assert_not @template.valid?
+    assert_includes @template.errors[:notes], "is too long (maximum is 2000 characters)"
+  end
+
+  test "should allow empty notes" do
+    @template.notes = nil
+    assert @template.valid?
+    
+    @template.notes = ""
+    assert @template.valid?
+  end
+
+  test "create_timer_for_user should include notes when present" do
+    @template.notes = "Important template notes"
+    timer = @template.create_timer_for_user(@user)
+    
+    assert_equal "Important template notes", timer.notes
+  end
+
+  test "create_timer_for_user should handle nil notes" do
+    @template.notes = nil
+    timer = @template.create_timer_for_user(@user)
+    
+    assert_nil timer.notes
+  end
+
+  test "create_timer_for_user should allow notes override" do
+    @template.notes = "Template notes"
+    overrides = { notes: "Custom notes" }
+    timer = @template.create_timer_for_user(@user, overrides)
+    
+    assert_equal "Custom notes", timer.notes
+  end
+
   test "popular scope should order by usage_count desc" do
     template1 = @user.timer_templates.create!(name: "Low Usage", timer_type: "stopwatch", usage_count: 1)
     template2 = @user.timer_templates.create!(name: "High Usage", timer_type: "stopwatch", usage_count: 10)

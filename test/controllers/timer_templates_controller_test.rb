@@ -187,4 +187,90 @@ class TimerTemplatesControllerTest < ActionController::TestCase
     assert_response :success
     # Test that the page loads - specific template attributes are tested in integration tests
   end
+
+  # Notes functionality tests
+  test "should create timer_template with notes" do
+    assert_difference('TimerTemplate.count') do
+      post :create, params: { 
+        timer_template: { 
+          name: "Template with Notes",
+          timer_type: "stopwatch",
+          task_name: "Test Task",
+          notes: "Important template notes for context"
+        } 
+      }
+    end
+    
+    template = TimerTemplate.last
+    assert_equal "Important template notes for context", template.notes
+    assert_redirected_to timer_template_path(template)
+  end
+
+  test "should update timer_template notes" do
+    patch :update, params: { 
+      id: @timer_template.id,
+      timer_template: { 
+        notes: "Updated notes content"
+      } 
+    }
+    
+    @timer_template.reload
+    assert_equal "Updated notes content", @timer_template.notes
+    assert_redirected_to timer_template_path(@timer_template)
+  end
+
+  test "should reject timer_template with notes too long" do
+    assert_no_difference('TimerTemplate.count') do
+      post :create, params: { 
+        timer_template: { 
+          name: "Invalid Template",
+          timer_type: "stopwatch",
+          notes: "a" * 2001 # Too long
+        } 
+      }
+    end
+    assert_response :unprocessable_entity
+  end
+
+  test "should create timer from template with notes" do
+    @timer_template.update!(notes: "Template context notes")
+    
+    assert_difference('Timer.count') do
+      post :create_timer, params: { id: @timer_template.id }
+    end
+    
+    timer = Timer.last
+    assert_equal "Template context notes", timer.notes
+    assert_equal @timer_template.task_name, timer.task_name
+    assert_redirected_to timers_path
+  end
+
+  test "should handle empty notes in template creation" do
+    assert_difference('TimerTemplate.count') do
+      post :create, params: { 
+        timer_template: { 
+          name: "Template without Notes",
+          timer_type: "stopwatch",
+          notes: ""
+        } 
+      }
+    end
+    
+    template = TimerTemplate.last
+    assert_equal "", template.notes
+  end
+
+  test "should clear notes when updating template" do
+    @timer_template.update!(notes: "Original notes")
+    
+    patch :update, params: { 
+      id: @timer_template.id,
+      timer_template: { 
+        notes: ""
+      } 
+    }
+    
+    @timer_template.reload
+    assert_equal "", @timer_template.notes
+  end
 end
