@@ -36,6 +36,21 @@ class TimersControllerTest < ActionDispatch::IntegrationTest
     assert_equal ["test", "development"], timer.parse_tags
   end
 
+  test "should create timer with notes" do
+    assert_difference("Timer.count") do
+      post timers_url, params: { 
+        timer: { 
+          task_name: "Timer with Notes",
+          notes: "This is a test note"
+        } 
+      }
+    end
+
+    timer = Timer.last
+    assert_redirected_to timer_url(timer)
+    assert_equal "This is a test note", timer.notes
+  end
+
   test "should not create timer with invalid params" do
     assert_no_difference("Timer.count") do
       post timers_url, params: { 
@@ -134,6 +149,17 @@ class TimersControllerTest < ActionDispatch::IntegrationTest
     @timer.reload
     assert_equal "Updated Timer Name", @timer.task_name
     assert_equal "Timer was successfully updated.", flash[:notice]
+  end
+
+  test "should update timer notes" do
+    patch timer_url(@timer), params: { 
+      timer: { 
+        notes: "Updated notes content" 
+      } 
+    }
+    assert_redirected_to timer_url(@timer)
+    @timer.reload
+    assert_equal "Updated notes content", @timer.notes
   end
 
   test "should not update timer with invalid params" do

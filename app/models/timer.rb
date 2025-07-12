@@ -8,6 +8,7 @@ class Timer < ApplicationRecord
   validates :duration, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :target_duration, numericality: { greater_than: 0 }, allow_nil: true
   validates :remaining_duration, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :notes, length: { maximum: 2000 }
 
   before_validation :set_default_status, on: :create
   after_save :create_tag_associations, if: :saved_change_to_tags?

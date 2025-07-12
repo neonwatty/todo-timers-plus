@@ -150,6 +150,19 @@
         <p class="form-help">Add tags to categorize this template. Separate multiple tags with commas.</p>
       </div>
 
+      <!-- Notes -->
+      <div class="mb-8">
+        <%= form.label :notes, class: "form-label" do %>
+          Notes
+          <span class="text-gray-400 font-normal">(Optional)</span>
+        <% end %>
+        <%= form.text_area :notes, 
+            class: "form-input",
+            placeholder: "Add context, instructions, or reminders for this template...",
+            rows: 3 %>
+        <p class="form-help">Add notes that will be included when creating timers from this template (max 2,000 characters).</p>
+      </div>
+
       <!-- Action Buttons -->
       <div class="flex flex-col sm:flex-row gap-3 sm:justify-end">
         <%= link_to timer_templates_path, class: "btn-secondary" do %>

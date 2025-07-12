@@ -104,7 +104,7 @@ class TimerTemplatesController < ApplicationController
   end
 
   def timer_template_params
-    params.require(:timer_template).permit(:name, :task_name, :timer_type, :target_duration, :tags, 
+    params.require(:timer_template).permit(:name, :task_name, :timer_type, :target_duration, :tags, :notes,
                                            :duration_hours, :duration_minutes, :duration_seconds)
                                    .tap do |template_params|
       # Handle duration conversion for countdown templates

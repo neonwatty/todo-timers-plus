@@ -71,9 +71,15 @@ class TimersController < ApplicationController
     @timer[:tags] = params[:timer][:tags] if params[:timer].has_key?(:tags)
     
     if @timer.update(timer_params)
-      redirect_to @timer, notice: 'Timer was successfully updated.'
+      respond_to do |format|
+        format.html { redirect_to @timer, notice: 'Timer was successfully updated.' }
+        format.json { render json: { success: true, notes: @timer.notes } }
+      end
     else
-      render :edit, status: :unprocessable_entity
+      respond_to do |format|
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: { success: false, errors: @timer.errors.full_messages } }
+      end
     end
   end
 
@@ -161,7 +167,7 @@ class TimersController < ApplicationController
   end
 
   def timer_params
-    params.require(:timer).permit(:task_name, :timer_type)
+    params.require(:timer).permit(:task_name, :timer_type, :notes)
   end
   
   def timer_json(timer)
@@ -180,7 +186,8 @@ class TimersController < ApplicationController
       is_expired: timer.expired?,
       formatted_duration: timer.formatted_duration,
       progress_percentage: timer.progress_percentage,
-      tags: timer.parse_tags
+      tags: timer.parse_tags,
+      notes: timer.notes
     }
     
     # Include updated controls HTML
@@ -209,7 +216,8 @@ class TimersController < ApplicationController
       name: "#{timer.task_name} Template",
       task_name: timer.task_name,
       timer_type: timer.timer_type,
-      tags: timer[:tags] # Use column access, not association
+      tags: timer[:tags], # Use column access, not association
+      notes: timer.notes
     }
     
     # Include duration for countdown timers

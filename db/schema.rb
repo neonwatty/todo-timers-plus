@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_11_231510) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_12_163425) do
   create_table "sessions", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "ip_address"
@@ -47,6 +47,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_11_231510) do
     t.datetime "last_used_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "notes"
     t.index ["last_used_at"], name: "index_timer_templates_on_last_used_at"
     t.index ["usage_count"], name: "index_timer_templates_on_usage_count"
     t.index ["user_id", "name"], name: "index_timer_templates_on_user_id_and_name", unique: true
@@ -67,6 +68,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_11_231510) do
     t.integer "remaining_duration"
     t.datetime "completed_at"
     t.string "timer_type", default: "stopwatch", null: false
+    t.text "notes"
     t.index ["completed_at"], name: "index_timers_on_completed_at"
     t.index ["timer_type"], name: "index_timers_on_timer_type"
     t.index ["user_id"], name: "index_timers_on_user_id"
@@ -80,7 +82,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_11_231510) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
-  add_foreign_key "sessions", "users"
   add_foreign_key "timer_tags", "tags"
   add_foreign_key "timer_tags", "timers"
   add_foreign_key "timer_templates", "users"

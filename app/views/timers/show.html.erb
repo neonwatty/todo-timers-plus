@@ -148,6 +148,49 @@
           </div>
         </div>
       <% end %>
+      
+      <div class="md:col-span-2" data-controller="notes-editor">
+        <div class="flex items-center justify-between mb-1">
+          <h3 class="text-sm font-medium text-gray-600">Notes</h3>
+          <button type="button" 
+                  data-action="click->notes-editor#toggleEdit"
+                  data-notes-editor-target="editButton"
+                  class="text-xs text-blue-600 hover:text-blue-700 font-medium">
+            <%= @timer.notes.present? ? 'Edit Notes' : 'Add Notes' %>
+          </button>
+        </div>
+        
+        <!-- View Mode -->
+        <div data-notes-editor-target="viewMode" class="<%= 'hidden' if @timer.notes.blank? %>">
+          <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+            <p class="text-gray-900 whitespace-pre-wrap" data-notes-editor-target="notesDisplay"><%= @timer.notes %></p>
+          </div>
+        </div>
+        
+        <!-- Edit Mode -->
+        <div data-notes-editor-target="editMode" class="hidden">
+          <%= form_with model: @timer, local: false, data: { action: "submit->notes-editor#saveNotes" } do |form| %>
+            <%= form.text_area :notes, 
+                class: "form-input w-full",
+                rows: 4,
+                placeholder: "Add any notes or context for this timer...",
+                data: { notes_editor_target: "notesTextarea" } %>
+            <div class="flex gap-2 mt-2">
+              <button type="submit" class="btn-primary btn-sm">Save</button>
+              <button type="button" 
+                      data-action="click->notes-editor#cancelEdit"
+                      class="btn-secondary btn-sm">Cancel</button>
+            </div>
+          <% end %>
+        </div>
+        
+        <!-- Empty State (when no notes) -->
+        <div data-notes-editor-target="emptyState" class="<%= 'hidden' if @timer.notes.present? %>">
+          <div class="bg-gray-50 rounded-lg p-3 border border-gray-200 border-dashed">
+            <p class="text-gray-500 text-sm italic">No notes added yet. Click "Add Notes" to get started.</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   

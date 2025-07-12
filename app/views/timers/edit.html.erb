@@ -70,6 +70,20 @@
       </p>
     </div>
 
+    <div class="form-group">
+      <%= form.label :notes, class: "form-label" do %>
+        Notes
+        <span class="text-gray-400 font-normal">(Optional)</span>
+      <% end %>
+      <%= form.text_area :notes, 
+          class: "form-input",
+          placeholder: "Add any notes or context for this timer...",
+          rows: 3 %>
+      <p class="text-sm text-gray-500">
+        Add notes, context, or reminders related to this timer (max 2,000 characters).
+      </p>
+    </div>
+
     <% if @timer.running? || @timer.paused? %>
       <div class="bg-amber-50 border border-amber-200 rounded-lg p-4">
         <div class="flex">

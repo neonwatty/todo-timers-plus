@@ -213,4 +213,32 @@ class TimerTest < ActiveSupport::TestCase
     assert_not timers(:running_timer).completed?
     assert_not timers(:paused_timer).completed?
   end
+
+  test "should validate notes length" do
+    timer = @user.timers.build(task_name: "Test Timer", notes: "a" * 2001)
+    assert_not timer.valid?
+    assert_includes timer.errors[:notes], "is too long (maximum is 2000 characters)"
+  end
+
+  test "should allow empty notes" do
+    timer = @user.timers.build(task_name: "Test Timer", notes: "")
+    assert timer.valid?
+  end
+
+  test "should allow nil notes" do
+    timer = @user.timers.build(task_name: "Test Timer", notes: nil)
+    assert timer.valid?
+  end
+
+  test "should preserve newlines in notes" do
+    notes_with_newlines = "Line 1\nLine 2\nLine 3"
+    timer = @user.timers.create!(task_name: "Test Timer", notes: notes_with_newlines)
+    assert_equal notes_with_newlines, timer.notes
+  end
+
+  test "should handle special characters in notes" do
+    special_notes = "Test with émojis 🎯 and symbols: @#$%^&*()"
+    timer = @user.timers.create!(task_name: "Test Timer", notes: special_notes)
+    assert_equal special_notes, timer.notes
+  end
 end

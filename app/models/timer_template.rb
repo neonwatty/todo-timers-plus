@@ -6,6 +6,7 @@ class TimerTemplate < ApplicationRecord
   validates :target_duration, presence: true, numericality: { greater_than: 0 }, if: :countdown?
   validates :task_name, length: { maximum: 255 }
   validates :tags, length: { maximum: 1000 }
+  validates :notes, length: { maximum: 2000 }
   
   scope :most_used, -> { order(usage_count: :desc) }
   scope :popular, -> { order(usage_count: :desc) }
@@ -55,6 +56,9 @@ class TimerTemplate < ApplicationRecord
     
     # Add tags if present (use column directly, not association)
     timer[:tags] = tags if tags.present?
+    
+    # Add notes if present
+    timer.notes = notes if notes.present?
     
     # Apply any overrides
     overrides.each { |key, value| timer.send("#{key}=", value) }

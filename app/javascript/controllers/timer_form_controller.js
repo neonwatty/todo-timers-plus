@@ -9,6 +9,7 @@ export default class extends Controller {
     "durationMinutes", 
     "durationSeconds",
     "tags",
+    "notes",
     "durationPicker",
     "templateSection",
     "saveAsTemplate"
@@ -56,6 +57,11 @@ export default class extends Controller {
     // Set tags
     if (this.hasTagsTarget && templateData.tags) {
       this.tagsTarget.value = templateData.tags
+    }
+    
+    // Set notes
+    if (this.hasNotesTarget && templateData.notes) {
+      this.notesTarget.value = templateData.notes
     }
     
     // Update visual state

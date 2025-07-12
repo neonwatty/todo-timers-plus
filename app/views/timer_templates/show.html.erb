@@ -89,6 +89,15 @@
               </dd>
             </div>
           <% end %>
+          
+          <% if @timer_template.notes.present? %>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Notes</dt>
+              <dd class="mt-2 bg-gray-50 rounded-lg p-3 border border-gray-200">
+                <p class="text-gray-900 whitespace-pre-wrap"><%= @timer_template.notes %></p>
+              </dd>
+            </div>
+          <% end %>
         </div>
       </div>
     </div>
