@@ -179,7 +179,8 @@ class TimersController < ApplicationController
       is_countdown: timer.countdown?,
       is_expired: timer.expired?,
       formatted_duration: timer.formatted_duration,
-      progress_percentage: timer.progress_percentage
+      progress_percentage: timer.progress_percentage,
+      tags: timer.parse_tags
     }
     
     # Include updated controls HTML

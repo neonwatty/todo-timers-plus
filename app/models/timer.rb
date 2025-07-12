@@ -1,7 +1,7 @@
 class Timer < ApplicationRecord
   belongs_to :user
   has_many :timer_tags, dependent: :destroy
-  has_many :tags, through: :timer_tags
+  has_many :tag_objects, through: :timer_tags, source: :tag
 
   validates :task_name, presence: true
   validates :status, inclusion: { in: %w[pending running paused stopped completed expired] }

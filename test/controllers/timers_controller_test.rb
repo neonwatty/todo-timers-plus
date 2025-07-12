@@ -29,8 +29,11 @@ class TimersControllerTest < ActionDispatch::IntegrationTest
       }
     end
 
-    assert_redirected_to timer_url(Timer.last)
+    timer = Timer.last
+    assert_redirected_to timer_url(timer)
     assert_equal "Timer was successfully created.", flash[:notice]
+    assert_equal "test, development", timer[:tags]
+    assert_equal ["test", "development"], timer.parse_tags
   end
 
   test "should not create timer with invalid params" do

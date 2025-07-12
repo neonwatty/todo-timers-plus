@@ -37,6 +37,15 @@
             <% end %>
           </span>
         </div>
+        <% if timer.parse_tags.any? %>
+          <div class="flex flex-wrap gap-1 mt-2">
+            <% timer.parse_tags.each do |tag| %>
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
+                <%= tag %>
+              </span>
+            <% end %>
+          </div>
+        <% end %>
       </div>
     </div>
     
