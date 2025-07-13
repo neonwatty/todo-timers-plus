@@ -30,6 +30,9 @@ class TimersController < ApplicationController
     # Handle tags if provided
     @timer[:tags] = params[:tags] if params[:tags].present?
     
+    # Handle notes if provided
+    @timer.notes = params[:notes] if params[:notes].present?
+    
     # Handle countdown timer duration
     if params[:timer_type] == 'countdown' && params[:duration_minutes].present?
       duration_seconds = params[:duration_minutes].to_i * 60

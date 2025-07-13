@@ -39,6 +39,66 @@ class QuickStartTimerTest < ApplicationSystemTestCase
     end
   end
   
+  test "quick starting countdown timer with preset" do
+    user = User.create!(
+      email_address: "countdown@example.com", 
+      password: "password123"
+    )
+    
+    # Sign in
+    visit new_session_path
+    fill_in "Email address", with: "countdown@example.com"
+    fill_in "Password", with: "password123"
+    click_button "Sign in"
+    
+    # Fill task name
+    fill_in "What are you working on?", with: "Pomodoro session"
+    
+    # Select countdown and click 25 min preset
+    choose "Countdown Timer"
+    click_button "25 min"
+    
+    # Verify timer was created correctly
+    assert_text "Timer started! 🚀"
+    
+    timer = user.timers.last
+    assert_equal "Pomodoro session", timer.task_name
+    assert_equal "countdown", timer.timer_type
+    assert_equal 1500, timer.target_duration
+    assert_equal "running", timer.status
+  end
+  
+  test "quick starting countdown with custom duration" do
+    user = User.create!(
+      email_address: "custom@example.com",
+      password: "password123"
+    )
+    
+    # Sign in
+    visit new_session_path
+    fill_in "Email address", with: "custom@example.com"
+    fill_in "Password", with: "password123"
+    click_button "Sign in"
+    
+    # Fill out form
+    fill_in "What are you working on?", with: "Custom timer"
+    choose "Countdown Timer"
+    fill_in "Custom", with: "45"
+    
+    # Click the custom start button
+    within ".flex.items-center.gap-2" do
+      click_button "Start"
+    end
+    
+    # Verify timer was created
+    assert_text "Timer started! 🚀"
+    
+    timer = user.timers.last
+    assert_equal "Custom timer", timer.task_name
+    assert_equal "countdown", timer.timer_type
+    assert_equal 2700, timer.target_duration # 45 minutes
+  end
+  
   test "quick starting with advanced options" do
     user = User.create!(
       email_address: "advanced@example.com", 
@@ -52,31 +112,27 @@ class QuickStartTimerTest < ApplicationSystemTestCase
     click_button "Sign in"
     
     # Open advanced options
-    find("button[title='More options']").click
+    click_button "Advanced Options"
     
     # Should see advanced fields
-    assert_text "Timer Type"
     assert_text "Tags"
-    
-    # Select countdown timer
-    choose "Countdown"
-    assert_selector "label", text: "Duration (minutes)"
+    assert_text "Notes"
     
     # Fill out form
-    fill_in "What are you working on?", with: "Pomodoro session"
-    fill_in "Duration (minutes)", with: "25"
+    fill_in "What are you working on?", with: "Tagged task"
     fill_in "Tags", with: "work, focus"
+    fill_in "Notes", with: "Remember to take breaks"
     
-    click_button "Start Timer"
+    click_button "Start Stopwatch"
     
     # Verify timer was created correctly
     assert_text "Timer started! 🚀"
     
     timer = user.timers.last
-    assert_equal "Pomodoro session", timer.task_name
-    assert_equal "countdown", timer.timer_type
-    assert_equal 1500, timer.target_duration
+    assert_equal "Tagged task", timer.task_name
+    assert_equal "stopwatch", timer.timer_type
     assert_equal "work, focus", timer[:tags]
+    assert_equal "Remember to take breaks", timer.notes
   end
   
   test "selecting recent tasks" do

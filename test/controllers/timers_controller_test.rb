@@ -277,5 +277,27 @@ class TimersControllerTest < ActionDispatch::IntegrationTest
     timer = Timer.last
     assert_equal "work, urgent", timer[:tags]
   end
+  
+  test "should quick start with notes" do
+    post quick_start_timers_url, params: { 
+      task_name: "Task with notes", 
+      notes: "Remember to check the API docs"
+    }, as: :turbo_stream
+    
+    timer = Timer.last
+    assert_equal "Remember to check the API docs", timer.notes
+  end
+  
+  test "should quick start without duration for countdown timer" do
+    post quick_start_timers_url, params: { 
+      task_name: "Countdown without duration", 
+      timer_type: "countdown"
+    }, as: :turbo_stream
+    
+    timer = Timer.last
+    assert_equal "countdown", timer.timer_type
+    assert_nil timer.target_duration
+    assert_nil timer.remaining_duration
+  end
 
 end
