@@ -43,7 +43,7 @@ class TagTest < ActiveSupport::TestCase
   test "should not destroy tag if associated with timers" do
     user = users(:one)
     timer = user.timers.create!(task_name: "Test Timer")
-    timer.tags << @tag
+    timer.tag_objects << @tag
     
     assert_no_difference 'Tag.count' do
       @tag.destroy

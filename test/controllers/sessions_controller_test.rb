@@ -56,14 +56,14 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert cookies[:session_id].blank?
   end
 
-  test "should redirect to dashboard if already signed in" do
+  test "should handle access to login page when already signed in" do
     # Sign in first
     post session_url, params: { 
       email_address: @user.email_address, 
       password: "password" 
     }
     
-    # The controller doesn't implement this redirect logic, so we expect normal response
+    # The controller doesn't implement redirect logic for already signed in users
     get new_session_url
     assert_response :success
   end

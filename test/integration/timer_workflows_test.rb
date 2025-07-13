@@ -273,8 +273,8 @@ class TimerWorkflowsTest < ActionDispatch::IntegrationTest
     assert timer.duration > 0
   end
 
-  test "timer navigation and dashboard integration" do
-    # Create some timers for dashboard stats
+  test "timer navigation and home page integration" do
+    # Create some timers for home page display
     running_timer = @user.timers.create!(
       task_name: "Running task", 
       status: "running",

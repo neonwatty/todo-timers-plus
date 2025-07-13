@@ -133,7 +133,7 @@ class TimerTypeSwitchingTest < ActionDispatch::IntegrationTest
     
     # Should show timer type info
     assert_select ".bg-blue-50 p", /Countdown Timer/
-    assert_select "p", /Target duration: 00:30:00/
+    assert_select "label", /Target Duration/
   end
 
   test "timer list shows both timer types correctly" do

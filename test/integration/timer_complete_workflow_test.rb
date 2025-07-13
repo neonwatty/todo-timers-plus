@@ -202,7 +202,7 @@ class TimerCompleteWorkflowTest < ActionDispatch::IntegrationTest
     assert_match "Task 3", response.body
   end
   
-  test "navigation and dashboard integration" do
+  test "navigation and home page integration" do
     user = users(:one)
     
     # Authenticate
