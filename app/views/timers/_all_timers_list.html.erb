@@ -1,0 +1,29 @@
+<div class="bg-white rounded-xl shadow-sm border border-gray-100">
+  <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+    <h3 class="text-xl font-semibold text-gray-900">All Timers</h3>
+    <div class="flex items-center gap-3">
+      <span class="text-sm text-gray-500">
+        <%= timers.count %> <%= 'timer'.pluralize(timers.count) %>
+      </span>
+      <%= link_to new_timer_path, class: "btn-secondary btn-sm" do %>
+        <%= icon_with_text :plus, "Advanced Timer", icon: { size: 4 } %>
+      <% end %>
+    </div>
+  </div>
+  
+  <% if timers.any? %>
+    <div class="divide-y divide-gray-200">
+      <% timers.each do |timer| %>
+        <%= render 'timer_list_item', timer: timer %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="text-center py-16">
+      <div class="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full mb-6">
+        <%= icon :clock, size: 12, class: "text-gray-400" %>
+      </div>
+      <h3 class="text-2xl font-semibold text-gray-900 mb-3">No timers yet</h3>
+      <p class="text-gray-600 mb-8 max-w-md mx-auto">Use the quick start form above to create your first timer!</p>
+    </div>
+  <% end %>
+</div>

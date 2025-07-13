@@ -1,45 +1,14 @@
-<% content_for :page_title, "All Timers" %>
-<% content_for :page_description, "Manage and track your time entries" %>
+<% content_for :page_title, "Timers" %>
+<% content_for :page_description, "Track your time and boost productivity" %>
 
-<!-- Header actions -->
-<div class="mb-8 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-    <div>
-      <h2 class="text-2xl font-bold text-gray-900">Your Timers</h2>
-      <p class="mt-1 text-gray-600">You have <%= @timers.count %> <%= 'timer'.pluralize(@timers.count) %> in total</p>
-    </div>
-    <div class="mt-4 sm:mt-0">
-      <%= link_to new_timer_path, class: "btn-primary" do %>
-        <%= icon_with_text :plus, "New Timer", icon: { size: 4 } %>
-      <% end %>
-    </div>
-  </div>
-</div>
+<!-- Quick Start Form -->
+<%= turbo_frame_tag "quick_start_form" do %>
+  <%= render 'quick_start_form' %>
+<% end %>
 
 <%= render 'active_timers_section', active_timers: @active_timers %>
 
 <!-- All timers list -->
-<div class="bg-white rounded-xl shadow-sm border border-gray-100">
-  <div class="px-6 py-4 border-b border-gray-100">
-    <h3 class="text-xl font-semibold text-gray-900">All Timers</h3>
-  </div>
-  
-  <% if @timers.any? %>
-    <div class="divide-y divide-gray-200">
-      <% @timers.each do |timer| %>
-        <%= render 'timer_list_item', timer: timer %>
-      <% end %>
-    </div>
-  <% else %>
-    <div class="text-center py-16">
-      <div class="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full mb-6">
-        <%= icon :clock, size: 12, class: "text-gray-400" %>
-      </div>
-      <h3 class="text-2xl font-semibold text-gray-900 mb-3">No timers yet</h3>
-      <p class="text-gray-600 mb-8 max-w-md mx-auto">Create your first timer to start tracking your time and boost your productivity!</p>
-      <%= link_to new_timer_path, class: "inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg shadow-sm hover:bg-blue-700 hover:shadow-md transition-all duration-150" do %>
-        <%= icon_with_text :plus, "Create First Timer", icon: { size: 4 } %>
-      <% end %>
-    </div>
-  <% end %>
-</div>
+<%= turbo_frame_tag "all_timers_list" do %>
+  <%= render 'all_timers_list', timers: @timers %>
+<% end %>

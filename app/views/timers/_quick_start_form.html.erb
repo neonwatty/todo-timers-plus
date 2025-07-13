@@ -1,0 +1,104 @@
+<!-- Quick Start Timer Form -->
+<div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl shadow-sm border border-blue-200 p-6 mb-8">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-xl font-bold text-gray-900 flex items-center">
+      <%= icon :lightning, size: 5, class: "text-blue-600 mr-2" %>
+      Quick Start Timer
+    </h2>
+    <span class="text-sm text-blue-700">Start timing in seconds!</span>
+  </div>
+  
+  <%= form_with url: quick_start_timers_path, local: false, class: "space-y-4", data: { controller: "quick-start" } do |form| %>
+    <div class="flex flex-col sm:flex-row gap-3">
+      <div class="flex-1">
+        <%= text_field_tag :task_name, nil,
+            placeholder: "What are you working on?",
+            class: "w-full px-4 py-3 text-base rounded-lg border border-blue-300 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors",
+            required: true,
+            autocomplete: "off",
+            data: { 
+              quick_start_target: "taskInput",
+              action: "keydown.enter->quick-start#handleEnter"
+            } %>
+      </div>
+      
+      <div class="flex gap-2">
+        <button type="submit" 
+                class="btn-primary px-6 py-3 text-base font-medium flex items-center"
+                data-quick-start-target="submitButton">
+          <%= icon :play, size: 5, class: "mr-2" %>
+          Start Timer
+        </button>
+        
+        <button type="button"
+                class="btn-secondary px-4 py-3 text-base"
+                data-action="click->quick-start#toggleAdvanced"
+                data-quick-start-target="advancedToggle"
+                title="More options">
+          <%= icon :settings, size: 5 %>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Advanced Options (Hidden by default) -->
+    <div class="hidden border-t border-blue-200 pt-4 space-y-4" data-quick-start-target="advancedOptions">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <!-- Timer Type -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Timer Type</label>
+          <div class="flex gap-3">
+            <label class="flex items-center">
+              <%= radio_button_tag :timer_type, "stopwatch", true, 
+                  class: "text-blue-600 focus:ring-blue-500",
+                  data: { action: "change->quick-start#toggleDuration" } %>
+              <span class="ml-2 text-sm text-gray-700">Stopwatch</span>
+            </label>
+            <label class="flex items-center">
+              <%= radio_button_tag :timer_type, "countdown", false,
+                  class: "text-blue-600 focus:ring-blue-500",
+                  data: { action: "change->quick-start#toggleDuration" } %>
+              <span class="ml-2 text-sm text-gray-700">Countdown</span>
+            </label>
+          </div>
+        </div>
+        
+        <!-- Duration (for countdown) -->
+        <div class="hidden" data-quick-start-target="durationField">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Duration (minutes)</label>
+          <%= number_field_tag :duration_minutes, 25,
+              class: "w-full px-3 py-2 rounded-md border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500",
+              min: 1,
+              max: 999 %>
+        </div>
+      </div>
+      
+      <!-- Tags -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Tags <span class="text-gray-500 font-normal">(optional)</span>
+        </label>
+        <%= text_field_tag :tags, nil,
+            placeholder: "e.g., work, project, client",
+            class: "w-full px-3 py-2 rounded-md border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500" %>
+      </div>
+    </div>
+  <% end %>
+  
+  <!-- Recent Tasks Suggestions -->
+  <% recent_tasks = Current.user.timers.select(:task_name).distinct.order(updated_at: :desc).limit(5).pluck(:task_name) %>
+  <% if recent_tasks.any? %>
+    <div class="mt-4 pt-4 border-t border-blue-200">
+      <p class="text-sm text-gray-700 mb-2">Recent tasks:</p>
+      <div class="flex flex-wrap gap-2">
+        <% recent_tasks.each do |task_name| %>
+          <button type="button"
+                  class="px-3 py-1 text-sm bg-white hover:bg-blue-50 text-gray-700 rounded-full border border-gray-300 hover:border-blue-400 transition-colors"
+                  data-action="click->quick-start#selectRecentTask"
+                  data-task-name="<%= task_name %>">
+            <%= task_name %>
+          </button>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

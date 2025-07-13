@@ -19,6 +19,48 @@ class TimersController < ApplicationController
     @popular_templates = Current.user.timer_templates.popular.limit(3)
   end
 
+  def quick_start
+    @timer = Current.user.timers.build(
+      task_name: params[:task_name],
+      timer_type: params[:timer_type] || 'stopwatch',
+      status: 'running',
+      start_time: Time.current
+    )
+    
+    # Handle tags if provided
+    @timer[:tags] = params[:tags] if params[:tags].present?
+    
+    # Handle countdown timer duration
+    if params[:timer_type] == 'countdown' && params[:duration_minutes].present?
+      duration_seconds = params[:duration_minutes].to_i * 60
+      @timer.target_duration = duration_seconds
+      @timer.remaining_duration = duration_seconds
+    end
+    
+    if @timer.save
+      respond_to do |format|
+        format.turbo_stream do
+          @active_timers = Current.user.active_timers
+          @timers = Current.user.timers.includes(:tag_objects).order(created_at: :desc)
+          render turbo_stream: [
+            turbo_stream.replace("quick_start_form", partial: "timers/quick_start_form"),
+            turbo_stream.replace("active_timers_section", partial: "timers/active_timers_section", locals: { active_timers: @active_timers }),
+            turbo_stream.replace("all_timers_list", partial: "timers/all_timers_list", locals: { timers: @timers }),
+            turbo_stream.replace("flash", partial: "shared/flash", locals: { notice: "Timer started! 🚀" })
+          ]
+        end
+        format.html { redirect_to timers_path, notice: "Timer started! 🚀" }
+      end
+    else
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace("flash", partial: "shared/flash", locals: { alert: @timer.errors.full_messages.join(", ") })
+        end
+        format.html { redirect_to timers_path, alert: @timer.errors.full_messages.join(", ") }
+      end
+    end
+  end
+
   def create
     @timer = Current.user.timers.build(timer_params)
     @timer.status = 'stopped'

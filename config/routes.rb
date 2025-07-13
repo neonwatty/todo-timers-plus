@@ -8,6 +8,9 @@ Rails.application.routes.draw do
   root "timers#index"
   
   resources :timers do
+    collection do
+      post :quick_start
+    end
     member do
       patch :start
       patch :pause

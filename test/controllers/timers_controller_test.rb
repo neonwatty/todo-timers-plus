@@ -10,7 +10,8 @@ class TimersControllerTest < ActionDispatch::IntegrationTest
   test "should get index" do
     get timers_url
     assert_response :success
-    assert_select "h2", "Your Timers"
+    assert_select "h2", "Quick Start Timer"
+    assert_select "h3", "All Timers"
   end
 
   test "should get new" do
@@ -231,6 +232,50 @@ class TimersControllerTest < ActionDispatch::IntegrationTest
     
     get timers_url
     assert_redirected_to new_session_url
+  end
+  
+  test "should quick start a stopwatch timer" do
+    assert_difference("Timer.count") do
+      post quick_start_timers_url, params: { task_name: "Quick task", timer_type: "stopwatch" }, as: :turbo_stream
+    end
+    
+    timer = Timer.last
+    assert_equal "Quick task", timer.task_name
+    assert_equal "stopwatch", timer.timer_type
+    assert_equal "running", timer.status
+    assert_not_nil timer.start_time
+    
+    assert_response :success
+    assert_match /Timer started!/, response.body
+  end
+  
+  test "should quick start a countdown timer" do
+    assert_difference("Timer.count") do
+      post quick_start_timers_url, params: { 
+        task_name: "Countdown task", 
+        timer_type: "countdown",
+        duration_minutes: "25"
+      }, as: :turbo_stream
+    end
+    
+    timer = Timer.last
+    assert_equal "Countdown task", timer.task_name
+    assert_equal "countdown", timer.timer_type
+    assert_equal "running", timer.status
+    assert_equal 1500, timer.target_duration
+    assert_equal 1500, timer.remaining_duration
+    
+    assert_response :success
+  end
+  
+  test "should quick start with tags" do
+    post quick_start_timers_url, params: { 
+      task_name: "Tagged task", 
+      tags: "work, urgent"
+    }, as: :turbo_stream
+    
+    timer = Timer.last
+    assert_equal "work, urgent", timer[:tags]
   end
 
 end
