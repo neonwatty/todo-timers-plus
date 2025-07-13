@@ -5,7 +5,7 @@ Rails.application.routes.draw do
     end
   end
   get "analytics", to: "analytics#index"
-  root "dashboard#index"
+  root "timers#index"
   
   resources :timers do
     member do
@@ -16,8 +16,6 @@ Rails.application.routes.draw do
       patch :reset
     end
   end
-  
-  get "dashboard", to: "dashboard#index"
   get "login", to: "sessions#new"
   resource :session
   resources :passwords, param: :token

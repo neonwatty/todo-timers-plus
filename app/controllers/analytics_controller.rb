@@ -4,6 +4,13 @@ class AnalyticsController < ApplicationController
     @period = params[:period] || 'week'
     @analytics = Current.user.analytics_data(@period.to_sym)
     
+    # Dashboard stats (moved from dashboard controller)
+    @active_timers = Current.user.active_timers
+    @recent_timers = Current.user.timers.completed.order(updated_at: :desc).limit(10)
+    @total_time_today = Current.user.total_time_today
+    @timer_count = Current.user.timers.count
+    @active_timer_count = @active_timers.count
+    
     # Prepare chart data
     @time_chart_data = prepare_time_chart_data
     @task_chart_data = prepare_task_chart_data

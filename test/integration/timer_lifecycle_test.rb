@@ -125,10 +125,10 @@ class TimerLifecycleTest < ActionDispatch::IntegrationTest
   test "timer navigation and page rendering" do
     timer = create_timer("Navigation test")
 
-    # Dashboard
-    get dashboard_path
+    # Home page (timers)
+    get root_path
     assert_response :success
-    assert_select "a[href='#{timers_path}']"
+    assert_select "a[href='#{new_timer_path}']"
 
     # Timers index
     get timers_path

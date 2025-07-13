@@ -35,17 +35,17 @@
                     <% end %>
                   </div>
                   <div class="hidden md:ml-10 md:flex md:items-baseline md:space-x-4">
-                    <%= link_to dashboard_path, 
-                        class: "#{current_page?(dashboard_path) ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-600 hover:text-white'} px-3 py-2 rounded-md text-sm font-medium transition-colors" do %>
-                      Dashboard
-                    <% end %>
                     <%= link_to timers_path, 
-                        class: "#{current_page?(timers_path) ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-600 hover:text-white'} px-3 py-2 rounded-md text-sm font-medium transition-colors" do %>
+                        class: "#{current_page?(timers_path) || current_page?(root_path) ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-600 hover:text-white'} px-3 py-2 rounded-md text-sm font-medium transition-colors" do %>
                       Timers
                     <% end %>
                     <%= link_to analytics_path, 
                         class: "#{current_page?(analytics_path) ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-600 hover:text-white'} px-3 py-2 rounded-md text-sm font-medium transition-colors" do %>
                       Analytics
+                    <% end %>
+                    <%= link_to timer_templates_path, 
+                        class: "#{current_page?(timer_templates_path) ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-600 hover:text-white'} px-3 py-2 rounded-md text-sm font-medium transition-colors" do %>
+                      Templates
                     <% end %>
                   </div>
                 </div>
@@ -81,17 +81,17 @@
             <!-- Mobile menu, show/hide based on menu state -->
             <div class="hidden md:hidden" id="mobile-menu">
               <div class="space-y-1 px-2 pb-3 pt-2 sm:px-3">
-                <%= link_to dashboard_path, 
-                    class: "#{current_page?(dashboard_path) ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-600 hover:text-white'} block rounded-md px-3 py-2 text-base font-medium transition-colors" do %>
-                  Dashboard
-                <% end %>
                 <%= link_to timers_path, 
-                    class: "#{current_page?(timers_path) ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-600 hover:text-white'} block rounded-md px-3 py-2 text-base font-medium transition-colors" do %>
+                    class: "#{current_page?(timers_path) || current_page?(root_path) ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-600 hover:text-white'} block rounded-md px-3 py-2 text-base font-medium transition-colors" do %>
                   Timers
                 <% end %>
                 <%= link_to analytics_path, 
                     class: "#{current_page?(analytics_path) ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-600 hover:text-white'} block rounded-md px-3 py-2 text-base font-medium transition-colors" do %>
                   Analytics
+                <% end %>
+                <%= link_to timer_templates_path, 
+                    class: "#{current_page?(timer_templates_path) ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-600 hover:text-white'} block rounded-md px-3 py-2 text-base font-medium transition-colors" do %>
+                  Templates
                 <% end %>
               </div>
               <div class="border-t border-blue-500 pt-4 pb-3">

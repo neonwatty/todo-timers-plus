@@ -227,11 +227,10 @@ class TimerCompleteWorkflowTest < ActionDispatch::IntegrationTest
       end_time: 1.hour.ago
     )
     
-    # Test dashboard
-    get dashboard_path
+    # Test home page (timers)
+    get root_path
     assert_response :success
     assert_select "a[href='#{new_timer_path}']"
-    assert_select "a[href='#{timers_path}']"
     assert_select "a[href='#{analytics_path}']"
     
     # Test timers index

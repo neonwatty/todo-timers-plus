@@ -194,11 +194,10 @@ class TimerWorkflowsSimplifiedTest < ActionDispatch::IntegrationTest
   test "navigation between timer pages" do
     timer = @user.timers.create!(task_name: "Navigation test", status: "stopped")
     
-    # Test navigation from dashboard
-    get dashboard_path
+    # Test navigation from home (timers page)
+    get root_path
     assert_response :success
     assert_select "a[href='#{new_timer_path}']"
-    assert_select "a[href='#{timers_path}']"
     
     # Test navigation to timer form
     get new_timer_path

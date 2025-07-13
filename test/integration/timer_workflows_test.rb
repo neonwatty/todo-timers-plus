@@ -289,16 +289,12 @@ class TimerWorkflowsTest < ActionDispatch::IntegrationTest
       end_time: 1.hour.ago
     )
     
-    # Visit dashboard
-    get dashboard_path
+    # Visit home page (timers)
+    get root_path
     assert_response :success
     
-    # Check stats are displayed (look for the stat card containers)
-    assert_select ".bg-white.rounded-xl.shadow-sm", minimum: 3
-    
-    # Navigate to timers from dashboard
+    # Navigate to timers
     assert_select "a[href='#{new_timer_path}']"
-    assert_select "a[href='#{timers_path}']"
     
     # Visit timers index
     get timers_path
