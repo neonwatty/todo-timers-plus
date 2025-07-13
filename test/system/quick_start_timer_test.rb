@@ -20,20 +20,13 @@ class QuickStartTimerTest < ApplicationSystemTestCase
     
     # Quick start a timer
     fill_in "What are you working on?", with: "Writing unit tests"
-    click_button "Start Timer"
+    click_button "Create Timer"
     
-    # Should see timer started
-    assert_text "Timer started! 🚀"
+    # Should see timer created
+    assert_text "Timer created! Ready to start tracking time 🚀"
     assert_text "Writing unit tests"
-    assert_text "Running"
     
-    # Timer should appear in active timers
-    within "#active_timers_grid" do
-      assert_text "Writing unit tests"
-      assert_selector "[data-countdown-timer-status-value='running']"
-    end
-    
-    # Timer should also appear in all timers list
+    # Timer should appear in all timers list (not active since it's not started)
     within "#all_timers_list" do
       assert_text "Writing unit tests"
     end
@@ -54,18 +47,19 @@ class QuickStartTimerTest < ApplicationSystemTestCase
     # Fill task name
     fill_in "What are you working on?", with: "Pomodoro session"
     
-    # Select countdown and click 25 min preset
+    # Select countdown, click 25 min preset, then create timer
     choose "Countdown Timer"
     click_button "25 min"
+    click_button "Create Timer"
     
     # Verify timer was created correctly
-    assert_text "Timer started! 🚀"
+    assert_text "Timer created! Ready to start tracking time 🚀"
     
     timer = user.timers.last
     assert_equal "Pomodoro session", timer.task_name
     assert_equal "countdown", timer.timer_type
     assert_equal 1500, timer.target_duration
-    assert_equal "running", timer.status
+    assert_equal "stopped", timer.status
   end
   
   test "quick starting countdown with custom duration" do
@@ -84,19 +78,16 @@ class QuickStartTimerTest < ApplicationSystemTestCase
     fill_in "What are you working on?", with: "Custom timer"
     choose "Countdown Timer"
     fill_in "Custom", with: "45"
-    
-    # Click the custom start button
-    within ".flex.items-center.gap-2" do
-      click_button "Start"
-    end
+    click_button "Create Timer"
     
     # Verify timer was created
-    assert_text "Timer started! 🚀"
+    assert_text "Timer created! Ready to start tracking time 🚀"
     
     timer = user.timers.last
     assert_equal "Custom timer", timer.task_name
     assert_equal "countdown", timer.timer_type
     assert_equal 2700, timer.target_duration # 45 minutes
+    assert_equal "stopped", timer.status
   end
   
   test "quick starting with advanced options" do
@@ -123,14 +114,15 @@ class QuickStartTimerTest < ApplicationSystemTestCase
     fill_in "Tags", with: "work, focus"
     fill_in "Notes", with: "Remember to take breaks"
     
-    click_button "Start Stopwatch"
+    click_button "Create Timer"
     
     # Verify timer was created correctly
-    assert_text "Timer started! 🚀"
+    assert_text "Timer created! Ready to start tracking time 🚀"
     
     timer = user.timers.last
     assert_equal "Tagged task", timer.task_name
     assert_equal "stopwatch", timer.timer_type
+    assert_equal "stopped", timer.status
     assert_equal "work, focus", timer[:tags]
     assert_equal "Remember to take breaks", timer.notes
   end

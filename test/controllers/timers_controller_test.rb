@@ -242,11 +242,11 @@ class TimersControllerTest < ActionDispatch::IntegrationTest
     timer = Timer.last
     assert_equal "Quick task", timer.task_name
     assert_equal "stopwatch", timer.timer_type
-    assert_equal "running", timer.status
-    assert_not_nil timer.start_time
+    assert_equal "stopped", timer.status
+    assert_nil timer.start_time
     
     assert_response :success
-    assert_match /Timer started!/, response.body
+    assert_match /Timer created!/, response.body
   end
   
   test "should quick start a countdown timer" do
@@ -261,7 +261,7 @@ class TimersControllerTest < ActionDispatch::IntegrationTest
     timer = Timer.last
     assert_equal "Countdown task", timer.task_name
     assert_equal "countdown", timer.timer_type
-    assert_equal "running", timer.status
+    assert_equal "stopped", timer.status
     assert_equal 1500, timer.target_duration
     assert_equal 1500, timer.remaining_duration
     
@@ -296,6 +296,7 @@ class TimersControllerTest < ActionDispatch::IntegrationTest
     
     timer = Timer.last
     assert_equal "countdown", timer.timer_type
+    assert_equal "stopped", timer.status
     assert_nil timer.target_duration
     assert_nil timer.remaining_duration
   end

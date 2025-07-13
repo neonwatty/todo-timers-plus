@@ -23,8 +23,7 @@ class TimersController < ApplicationController
     @timer = Current.user.timers.build(
       task_name: params[:task_name],
       timer_type: params[:timer_type] || 'stopwatch',
-      status: 'running',
-      start_time: Time.current
+      status: 'stopped'
     )
     
     # Handle tags if provided
@@ -49,10 +48,10 @@ class TimersController < ApplicationController
             turbo_stream.replace("quick_start_form", partial: "timers/quick_start_form"),
             turbo_stream.replace("active_timers_section", partial: "timers/active_timers_section", locals: { active_timers: @active_timers }),
             turbo_stream.replace("all_timers_list", partial: "timers/all_timers_list", locals: { timers: @timers }),
-            turbo_stream.replace("flash", partial: "shared/flash", locals: { notice: "Timer started! 🚀" })
+            turbo_stream.replace("flash", partial: "shared/flash", locals: { notice: "Timer created! Ready to start tracking time 🚀" })
           ]
         end
-        format.html { redirect_to timers_path, notice: "Timer started! 🚀" }
+        format.html { redirect_to timers_path, notice: "Timer created! Ready to start tracking time 🚀" }
       end
     else
       respond_to do |format|

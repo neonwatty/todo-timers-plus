@@ -5,7 +5,7 @@
       <%= icon :lightning, size: 5, class: "text-blue-600 mr-2" %>
       Quick Start Timer
     </h2>
-    <span class="text-sm text-blue-700">Start timing in seconds!</span>
+    <span class="text-sm text-blue-700">Create and configure timers quickly!</span>
   </div>
   
   <%= form_with url: quick_start_timers_path, local: false, class: "space-y-4", data: { controller: "quick-start" } do |form| %>
@@ -24,10 +24,10 @@
       </div>
     </div>
     
-    <!-- Timer Type Selection with Quick Actions -->
+    <!-- Timer Type Selection -->
     <div class="space-y-3">
       <!-- Stopwatch Option -->
-      <div class="flex items-center justify-between">
+      <div class="flex items-center">
         <label class="flex items-center">
           <%= radio_button_tag :timer_type, "stopwatch", true, 
               class: "text-blue-600 focus:ring-blue-500",
@@ -40,17 +40,11 @@
             Stopwatch
           </span>
         </label>
-        <button type="submit" 
-                class="btn-primary btn-sm px-4 py-2 transition-opacity"
-                data-quick-start-target="stopwatchStartButton">
-          <%= icon :play, size: 4, class: "mr-1" %>
-          Start Stopwatch
-        </button>
       </div>
       
       <!-- Countdown Option with Presets -->
       <div>
-        <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center mb-2">
           <label class="flex items-center">
             <%= radio_button_tag :timer_type, "countdown", false,
                 class: "text-blue-600 focus:ring-blue-500",
@@ -70,31 +64,31 @@
           <div class="flex flex-wrap gap-2">
             <button type="button"
                     class="quick-duration-btn px-3 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-400 transition-colors"
-                    data-action="click->quick-start#selectDurationAndStart"
+                    data-action="click->quick-start#selectDuration"
                     data-minutes="5">
               5 min
             </button>
             <button type="button"
                     class="quick-duration-btn px-3 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-400 transition-colors"
-                    data-action="click->quick-start#selectDurationAndStart"
+                    data-action="click->quick-start#selectDuration"
                     data-minutes="10">
               10 min
             </button>
             <button type="button"
                     class="quick-duration-btn px-3 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-400 transition-colors"
-                    data-action="click->quick-start#selectDurationAndStart"
+                    data-action="click->quick-start#selectDuration"
                     data-minutes="15">
               15 min
             </button>
             <button type="button"
                     class="quick-duration-btn px-3 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-400 transition-colors"
-                    data-action="click->quick-start#selectDurationAndStart"
+                    data-action="click->quick-start#selectDuration"
                     data-minutes="25">
               25 min
             </button>
             <button type="button"
                     class="quick-duration-btn px-3 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-400 transition-colors"
-                    data-action="click->quick-start#selectDurationAndStart"
+                    data-action="click->quick-start#selectDuration"
                     data-minutes="30">
               30 min
             </button>
@@ -106,15 +100,24 @@
                   class: "w-20 px-2 py-2 text-sm rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500",
                   min: 1,
                   max: 999,
-                  data: { quick_start_target: "customDurationInput" } %>
-              <button type="submit"
-                      class="btn-primary btn-sm px-3 py-2"
-                      data-quick-start-target="customStartButton">
-                Start
-              </button>
+                  data: { 
+                    quick_start_target: "customDurationInput",
+                    action: "input->quick-start#handleCustomDuration"
+                  } %>
+              <span class="text-sm text-gray-500">min</span>
             </div>
           </div>
         </div>
+      </div>
+      
+      <!-- Create Timer Button -->
+      <div class="pt-3 border-t border-blue-200">
+        <button type="submit" 
+                class="btn-primary w-full sm:w-auto px-6 py-3 text-base font-medium flex items-center justify-center"
+                data-quick-start-target="submitButton">
+          <%= icon :plus, size: 5, class: "mr-2" %>
+          Create Timer
+        </button>
       </div>
     </div>
     
