@@ -1,5 +1,241 @@
 @import 'tailwindcss';
 
+/* CSS Variables for theme colors */
+:root {
+  --color-bg-primary: 255 255 255;
+  --color-bg-secondary: 252 252 252;
+  --color-bg-tertiary: 248 248 248;
+  --color-text-primary: 17 24 39;
+  --color-text-secondary: 55 65 81;
+  --color-text-tertiary: 107 114 128;
+  --color-border: 229 231 235;
+  --color-border-secondary: 209 213 219;
+}
+
+html.dark {
+  --color-bg-primary: 17 24 39;
+  --color-bg-secondary: 31 41 55;
+  --color-bg-tertiary: 55 65 81;
+  --color-text-primary: 243 244 246;
+  --color-text-secondary: 209 213 219;
+  --color-text-tertiary: 156 163 175;
+  --color-border: 55 65 81;
+  --color-border-secondary: 75 85 99;
+}
+
+/* Dark mode styles for specific elements */
+.dark body {
+  background-color: rgb(17 24 39) !important;
+  color: rgb(243 244 246) !important;
+}
+
+/* Dark mode styles */
+html.dark body {
+  background-color: rgb(17 24 39) !important;
+  color: rgb(243 244 246) !important;
+}
+
+/* Light mode - ensure white backgrounds */
+.bg-gray-50 {
+  background-color: rgb(255 255 255) !important;
+}
+
+.hover\:bg-gray-50:hover {
+  background-color: rgb(248 250 252) !important;
+}
+
+/* Override Tailwind's default gray-50 color */
+:root {
+  --color-gray-50: 255 255 255 !important;
+}
+
+/* Dark mode overrides */
+html.dark .bg-white {
+  background-color: rgb(17 24 39) !important;
+}
+
+html.dark .bg-gray-50 {
+  background-color: rgb(17 24 39) !important;
+}
+
+html.dark .hover\:bg-gray-50:hover {
+  background-color: rgb(55 65 81) !important;
+}
+
+html.dark .text-gray-900 {
+  color: rgb(243 244 246) !important;
+}
+
+html.dark .bg-gradient-to-r {
+  background: rgb(55 65 81) !important;
+}
+
+html.dark .from-blue-600 {
+  --tw-gradient-from: rgb(55 65 81) !important;
+}
+
+html.dark .to-blue-700 {
+  --tw-gradient-to: rgb(75 85 99) !important;
+}
+
+/* Dark mode toggle icon visibility */
+.dark-mode-sun {
+  display: block;
+}
+
+.dark .dark-mode-sun {
+  display: none;
+}
+
+.dark-mode-moon {
+  display: none;
+}
+
+.dark .dark-mode-moon {
+  display: block;
+}
+
+/* Dark mode utility classes */
+.dark .dark\:block {
+  display: block;
+}
+
+.dark .dark\:hidden {
+  display: none;
+}
+
+.dark\:block {
+  display: none;
+}
+
+.dark .dark\:inline {
+  display: inline;
+}
+
+.dark\:inline {
+  display: none;
+}
+
+.dark .dark\:bg-gray-800 {
+  background-color: rgb(31 41 55);
+}
+
+.dark .dark\:bg-gray-900 {
+  background-color: rgb(17 24 39);
+}
+
+.dark .dark\:text-gray-100 {
+  color: rgb(243 244 246);
+}
+
+.dark .dark\:text-gray-300 {
+  color: rgb(209 213 219);
+}
+
+.dark .dark\:text-gray-400 {
+  color: rgb(156 163 175);
+}
+
+.dark .dark\:border-gray-700 {
+  border-color: rgb(75 85 99);
+}
+
+.dark .dark\:border-gray-600 {
+  border-color: rgb(107 114 128);
+}
+
+.dark .dark\:hover\:bg-gray-700\/50:hover {
+  background-color: rgb(55 65 81 / 0.5);
+}
+
+.dark .dark\:bg-green-900\/30 {
+  background-color: rgb(20 83 45 / 0.3);
+}
+
+.dark .dark\:text-green-400 {
+  color: rgb(74 222 128);
+}
+
+.dark .dark\:bg-red-900\/30 {
+  background-color: rgb(127 29 29 / 0.3);
+}
+
+.dark .dark\:text-red-400 {
+  color: rgb(248 113 113);
+}
+
+.dark .dark\:bg-amber-900\/30 {
+  background-color: rgb(120 53 15 / 0.3);
+}
+
+.dark .dark\:text-amber-400 {
+  color: rgb(251 191 36);
+}
+
+.dark .dark\:bg-blue-900\/30 {
+  background-color: rgb(30 58 138 / 0.3);
+}
+
+.dark .dark\:text-blue-400 {
+  color: rgb(96 165 250);
+}
+
+.dark .dark\:bg-blue-900\/20 {
+  background-color: rgb(30 58 138 / 0.2);
+}
+
+.dark .dark\:bg-blue-800\/20 {
+  background-color: rgb(30 64 175 / 0.2);
+}
+
+.dark .dark\:border-blue-800 {
+  border-color: rgb(30 64 175);
+}
+
+.dark .dark\:border-blue-700 {
+  border-color: rgb(29 78 216);
+}
+
+.dark .dark\:hover\:bg-blue-900\/30:hover {
+  background-color: rgb(30 58 138 / 0.3);
+}
+
+.dark .dark\:hover\:text-blue-300:hover {
+  color: rgb(147 197 253);
+}
+
+.dark .dark\:hover\:border-blue-600:hover {
+  border-color: rgb(37 99 235);
+}
+
+.dark .dark\:hover\:text-blue-400:hover {
+  color: rgb(96 165 250);
+}
+
+.dark .dark\:focus\:ring-blue-800:focus {
+  --tw-ring-color: rgb(30 64 175);
+}
+
+.dark .dark\:bg-green-900\/20 {
+  background-color: rgb(20 83 45 / 0.2);
+}
+
+.dark .dark\:bg-red-900\/20 {
+  background-color: rgb(127 29 29 / 0.2);
+}
+
+.dark .dark\:divide-gray-700 > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgb(75 85 99);
+}
+
+.dark .dark\:from-gray-800 {
+  --tw-gradient-from: rgb(31 41 55);
+}
+
+.dark .dark\:to-gray-700 {
+  --tw-gradient-to: rgb(55 65 81);
+}
+
 /* Component styles using standard CSS without @apply */
 
 /* Buttons */
@@ -66,18 +302,18 @@
   align-items: center;
   justify-content: center;
   padding: 0.5rem 1rem;
-  border: 1px solid rgb(209 213 219);
+  border: 1px solid rgb(var(--color-border-secondary));
   font-size: 0.875rem;
   font-weight: 500;
   border-radius: 0.375rem;
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   transition: all 0.15s;
-  color: rgb(55 65 81);
-  background-color: white;
+  color: rgb(var(--color-text-secondary));
+  background-color: rgb(var(--color-bg-primary));
 }
 
 .btn-secondary:hover {
-  background-color: rgb(249 250 251);
+  background-color: rgb(var(--color-bg-secondary));
 }
 
 .btn-secondary:focus {
@@ -200,10 +436,12 @@
   display: block;
   width: 100%;
   border-radius: 0.375rem;
-  border: 1px solid rgb(209 213 219);
+  border: 1px solid rgb(var(--color-border-secondary));
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   font-size: 0.875rem;
   padding: 0.5rem 0.75rem;
+  background-color: rgb(var(--color-bg-primary));
+  color: rgb(var(--color-text-primary));
 }
 
 .form-input:focus {
@@ -215,7 +453,7 @@
   display: block;
   font-size: 0.875rem;
   font-weight: 500;
-  color: rgb(55 65 81);
+  color: rgb(var(--color-text-secondary));
   margin-bottom: 0.25rem;
 }
 
@@ -231,16 +469,16 @@
 
 /* Cards */
 .card {
-  background-color: white;
+  background-color: rgb(var(--color-bg-primary));
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-  border: 1px solid rgb(229 231 235);
+  border: 1px solid rgb(var(--color-border));
   overflow: hidden;
 }
 
 .card-header {
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid rgb(229 231 235);
+  border-bottom: 1px solid rgb(var(--color-border));
 }
 
 .card-body {
@@ -248,10 +486,10 @@
 }
 
 .timer-card {
-  background-color: white;
+  background-color: rgb(var(--color-bg-primary));
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-  border: 1px solid rgb(229 231 235);
+  border: 1px solid rgb(var(--color-border));
   overflow: hidden;
   transition: box-shadow 0.2s;
 }
@@ -291,13 +529,13 @@
 }
 
 .badge-gray {
-  background-color: rgb(243 244 246);
-  color: rgb(55 65 81);
+  background-color: rgb(var(--color-bg-tertiary));
+  color: rgb(var(--color-text-secondary));
 }
 
 /* Stats */
 .stat-card {
-  background-color: white;
+  background-color: rgb(var(--color-bg-primary));
   overflow: hidden;
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
   border-radius: 0.5rem;
@@ -314,7 +552,7 @@
 
 /* Navigation */
 .nav-link {
-  color: rgb(107 114 128);
+  color: rgb(var(--color-text-tertiary));
   padding: 0.5rem 0.75rem;
   border-radius: 0.375rem;
   font-size: 0.875rem;
@@ -323,12 +561,12 @@
 }
 
 .nav-link:hover {
-  color: rgb(17 24 39);
+  color: rgb(var(--color-text-primary));
 }
 
 .nav-link-active {
-  color: rgb(17 24 39);
-  background-color: rgb(243 244 246);
+  color: rgb(var(--color-text-primary));
+  background-color: rgb(var(--color-bg-tertiary));
 }
 
 /* Utilities */
@@ -336,14 +574,14 @@
   font-size: 1.875rem;
   font-family: ui-monospace, SFMono-Regular, "SF Mono", monospace;
   font-weight: 700;
-  color: rgb(17 24 39);
+  color: rgb(var(--color-text-primary));
   font-variant-numeric: tabular-nums;
 }
 
 .section-header {
   font-size: 1.125rem;
   font-weight: 500;
-  color: rgb(17 24 39);
+  color: rgb(var(--color-text-primary));
 }
 
 /* Animations */

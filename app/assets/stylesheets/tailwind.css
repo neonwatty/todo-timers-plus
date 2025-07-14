@@ -1,0 +1,4 @@
+@import 'tailwindcss';
+
+/* Import our custom styles */
+@import './application.tailwind.css';

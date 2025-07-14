@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="h-full bg-gray-50">
+<html class="h-full" data-controller="dark-mode">
   <head>
     <title><%= content_for(:title) || "Todo Timers+" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -19,7 +19,7 @@
     <%= vite_javascript_tag 'application' %>
   </head>
 
-  <body class="h-full">
+  <body class="h-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
     <% if Current.user %>
       <div class="min-h-full">
         <!-- Navigation -->
@@ -62,6 +62,18 @@
                       </div>
                     </div>
                   </div>
+                  <!-- Dark mode toggle -->
+                  <button type="button"
+                          data-action="click->dark-mode#toggle"
+                          class="ml-3 p-2 text-blue-100 hover:text-white hover:bg-blue-600 rounded-md transition-colors"
+                          aria-label="Toggle dark mode">
+                    <svg class="w-5 h-5 dark-mode-sun" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
+                    </svg>
+                    <svg class="w-5 h-5 dark-mode-moon" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                    </svg>
+                  </button>
                   <div class="md:hidden">
                     <button type="button" 
                             class="inline-flex items-center justify-center rounded-md bg-blue-700 p-2 text-blue-100 hover:bg-blue-800 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600"
@@ -99,6 +111,21 @@
                   <div class="text-base font-medium text-white"><%= Current.user.email_address %></div>
                 </div>
                 <div class="mt-3 px-2 space-y-1">
+                  <button type="button"
+                          data-action="click->dark-mode#toggle"
+                          class="text-blue-100 hover:bg-blue-600 hover:text-white block rounded-md px-3 py-2 text-base font-medium w-full text-left transition-colors"
+                          aria-label="Toggle dark mode">
+                    <span class="flex items-center">
+                      <svg class="w-5 h-5 mr-2 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
+                      </svg>
+                      <svg class="w-5 h-5 mr-2 block dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                      </svg>
+                      <span class="dark:hidden">Dark Mode</span>
+                      <span class="hidden dark:inline">Light Mode</span>
+                    </span>
+                  </button>
                   <%= button_to session_path, method: :delete, 
                       class: "text-blue-100 hover:bg-blue-600 hover:text-white block rounded-md px-3 py-2 text-base font-medium bg-transparent border-0 w-full text-left transition-colors",
                       form_class: "block" do %>
@@ -130,13 +157,13 @@
             <!-- Flash messages -->
             <div id="flash">
               <% if notice %>
-                <div class="mb-4 rounded-md bg-green-50 p-4">
-                  <div class="text-sm text-green-700"><%= notice %></div>
+                <div class="mb-4 rounded-md bg-green-50 dark:bg-green-900/20 p-4">
+                  <div class="text-sm text-green-700 dark:text-green-400"><%= notice %></div>
                 </div>
               <% end %>
               <% if alert %>
-                <div class="mb-4 rounded-md bg-red-50 p-4">
-                  <div class="text-sm text-red-700"><%= alert %></div>
+                <div class="mb-4 rounded-md bg-red-50 dark:bg-red-900/20 p-4">
+                  <div class="text-sm text-red-700 dark:text-red-400"><%= alert %></div>
                 </div>
               <% end %>
             </div>
@@ -147,7 +174,7 @@
       </div>
     <% else %>
       <!-- Unauthenticated layout -->
-      <div class="min-h-full bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div class="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div class="sm:mx-auto sm:w-full sm:max-w-md">
           <div class="text-center">
             <h1 class="text-3xl font-bold text-gray-900 flex items-center justify-center">
@@ -159,15 +186,15 @@
         </div>
         
         <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <div class="bg-white dark:bg-gray-800 py-8 px-4 shadow sm:rounded-lg sm:px-10">
             <% if notice %>
-              <div class="mb-4 rounded-md bg-green-50 p-4">
-                <div class="text-sm text-green-700"><%= notice %></div>
+              <div class="mb-4 rounded-md bg-green-50 dark:bg-green-900/20 p-4">
+                <div class="text-sm text-green-700 dark:text-green-400"><%= notice %></div>
               </div>
             <% end %>
             <% if alert %>
-              <div class="mb-4 rounded-md bg-red-50 p-4">
-                <div class="text-sm text-red-700"><%= alert %></div>
+              <div class="mb-4 rounded-md bg-red-50 dark:bg-red-900/20 p-4">
+                <div class="text-sm text-red-700 dark:text-red-400"><%= alert %></div>
               </div>
             <% end %>
             

@@ -1,11 +1,11 @@
 <!-- Quick Start Timer Form -->
-<div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl shadow-sm border border-blue-200 p-6 mb-8">
+<div class="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl shadow-sm border border-blue-200 dark:border-blue-800 p-6 mb-8">
   <div class="flex items-center justify-between mb-4">
-    <h2 class="text-xl font-bold text-gray-900 flex items-center">
+    <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center">
       <%= icon :lightning, size: 5, class: "text-blue-600 mr-2" %>
       Quick Start Timer
     </h2>
-    <span class="text-sm text-blue-700">Create and configure timers quickly!</span>
+    <span class="text-sm text-blue-700 dark:text-blue-400">Create and configure timers quickly!</span>
   </div>
   
   <%= form_with url: quick_start_timers_path, local: false, class: "space-y-4", data: { controller: "quick-start" } do |form| %>
@@ -14,7 +14,7 @@
       <div class="flex-1">
         <%= text_field_tag :task_name, nil,
             placeholder: "What are you working on?",
-            class: "w-full px-4 py-3 text-base rounded-lg border border-blue-300 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors",
+            class: "w-full px-4 py-3 text-base rounded-lg border border-blue-300 dark:border-blue-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition-colors",
             required: true,
             autocomplete: "off",
             data: { 
@@ -35,7 +35,7 @@
                 quick_start_target: "stopwatchRadio",
                 action: "change->quick-start#toggleTimerType" 
               } %>
-          <span class="ml-2 text-sm font-medium text-gray-700">
+          <span class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
             <%= icon :clock, size: 4, class: "inline mr-1 text-gray-600" %>
             Stopwatch
           </span>
@@ -52,7 +52,7 @@
                   quick_start_target: "countdownRadio",
                   action: "change->quick-start#toggleTimerType" 
                 } %>
-            <span class="ml-2 text-sm font-medium text-gray-700">
+            <span class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
               <%= icon :hourglass, size: 4, class: "inline mr-1 text-gray-600" %>
               Countdown Timer
             </span>
@@ -63,31 +63,31 @@
         <div class="ml-6 space-y-2 transition-all duration-200" data-quick-start-target="countdownOptions">
           <div class="flex flex-wrap gap-2">
             <button type="button"
-                    class="quick-duration-btn px-3 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-400 transition-colors"
+                    class="quick-duration-btn px-3 py-2 text-sm font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-400 dark:hover:border-blue-600 transition-colors"
                     data-action="click->quick-start#selectDuration"
                     data-minutes="5">
               5 min
             </button>
             <button type="button"
-                    class="quick-duration-btn px-3 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-400 transition-colors"
+                    class="quick-duration-btn px-3 py-2 text-sm font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-400 dark:hover:border-blue-600 transition-colors"
                     data-action="click->quick-start#selectDuration"
                     data-minutes="10">
               10 min
             </button>
             <button type="button"
-                    class="quick-duration-btn px-3 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-400 transition-colors"
+                    class="quick-duration-btn px-3 py-2 text-sm font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-400 dark:hover:border-blue-600 transition-colors"
                     data-action="click->quick-start#selectDuration"
                     data-minutes="15">
               15 min
             </button>
             <button type="button"
-                    class="quick-duration-btn px-3 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-400 transition-colors"
+                    class="quick-duration-btn px-3 py-2 text-sm font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-400 dark:hover:border-blue-600 transition-colors"
                     data-action="click->quick-start#selectDuration"
                     data-minutes="25">
               25 min
             </button>
             <button type="button"
-                    class="quick-duration-btn px-3 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-400 transition-colors"
+                    class="quick-duration-btn px-3 py-2 text-sm font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-400 dark:hover:border-blue-600 transition-colors"
                     data-action="click->quick-start#selectDuration"
                     data-minutes="30">
               30 min
@@ -97,21 +97,21 @@
             <div class="flex items-center gap-2">
               <%= number_field_tag :duration_minutes, nil,
                   placeholder: "Custom",
-                  class: "w-20 px-2 py-2 text-sm rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500",
+                  class: "w-20 px-2 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-1 focus:ring-blue-500",
                   min: 1,
                   max: 999,
                   data: { 
                     quick_start_target: "customDurationInput",
                     action: "input->quick-start#handleCustomDuration"
                   } %>
-              <span class="text-sm text-gray-500">min</span>
+              <span class="text-sm text-gray-500 dark:text-gray-400">min</span>
             </div>
           </div>
         </div>
       </div>
       
       <!-- Create Timer Button -->
-      <div class="pt-3 border-t border-blue-200">
+      <div class="pt-3 border-t border-blue-200 dark:border-blue-800">
         <button type="submit" 
                 class="btn-primary w-full sm:w-auto px-6 py-3 text-base font-medium flex items-center justify-center"
                 data-quick-start-target="submitButton">
@@ -126,7 +126,7 @@
     <!-- Advanced Options (Hidden by default) -->
     <div class="flex items-center gap-2 pt-2">
       <button type="button"
-              class="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center"
+              class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium flex items-center"
               data-action="click->quick-start#toggleAdvanced"
               data-quick-start-target="advancedToggle">
         <%= icon :chevron_down, size: 4, class: "mr-1 transition-transform", data: { quick_start_target: "advancedIcon" } %>
@@ -134,26 +134,26 @@
       </button>
     </div>
     
-    <div class="hidden border-t border-blue-200 pt-4 space-y-4" data-quick-start-target="advancedOptions">
+    <div class="hidden border-t border-blue-200 dark:border-blue-800 pt-4 space-y-4" data-quick-start-target="advancedOptions">
       <!-- Tags -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
-          Tags <span class="text-gray-500 font-normal">(optional)</span>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Tags <span class="text-gray-500 dark:text-gray-400 font-normal">(optional)</span>
         </label>
         <%= text_field_tag :tags, nil,
             placeholder: "e.g., work, project, client",
-            class: "w-full px-3 py-2 rounded-md border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500" %>
+            class: "w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-1 focus:ring-blue-500" %>
       </div>
       
       <!-- Notes -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
-          Notes <span class="text-gray-500 font-normal">(optional)</span>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Notes <span class="text-gray-500 dark:text-gray-400 font-normal">(optional)</span>
         </label>
         <%= text_area_tag :notes, nil,
             placeholder: "Add any notes about this timer...",
             rows: 2,
-            class: "w-full px-3 py-2 rounded-md border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500" %>
+            class: "w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-1 focus:ring-blue-500" %>
       </div>
     </div>
   <% end %>
@@ -161,12 +161,12 @@
   <!-- Recent Tasks Suggestions -->
   <% recent_tasks = Current.user.timers.select(:task_name).distinct.order(updated_at: :desc).limit(5).pluck(:task_name) %>
   <% if recent_tasks.any? %>
-    <div class="mt-4 pt-4 border-t border-blue-200">
-      <p class="text-sm text-gray-700 mb-2">Recent tasks:</p>
+    <div class="mt-4 pt-4 border-t border-blue-200 dark:border-blue-800">
+      <p class="text-sm text-gray-700 dark:text-gray-300 mb-2">Recent tasks:</p>
       <div class="flex flex-wrap gap-2">
         <% recent_tasks.each do |task_name| %>
           <button type="button"
-                  class="px-3 py-1 text-sm bg-white hover:bg-blue-50 text-gray-700 rounded-full border border-gray-300 hover:border-blue-400 transition-colors"
+                  class="px-3 py-1 text-sm bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-300 rounded-full border border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-600 transition-colors"
                   data-action="click->quick-start#selectRecentTask"
                   data-task-name="<%= task_name %>">
             <%= task_name %>

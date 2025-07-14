@@ -1,5 +1,5 @@
 <%= turbo_frame_tag dom_id(timer), class: "contents" do %>
-  <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all duration-200" 
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md transition-all duration-200" 
        data-timer-id="<%= timer.id %>"
        data-controller="countdown-timer"
        data-countdown-timer-timer-id-value="<%= timer.id %>"
@@ -11,13 +11,13 @@
        data-countdown-timer-update-url-value="<%= timer_path(timer) %>">
     <div class="flex items-start justify-between mb-4">
       <div class="flex-1">
-        <h4 class="text-lg font-semibold text-gray-900 mb-2"><%= timer.task_name %></h4>
+        <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2"><%= timer.task_name %></h4>
         <div class="text-3xl font-mono font-bold <%= timer.expired? ? 'text-red-600' : 'text-blue-600' %> mb-3 <%= 'animate-pulse-subtle' if timer.running? %>"
              data-countdown-timer-target="display">
           <%= timer.formatted_duration %>
         </div>
         <% if timer.countdown? && timer.target_duration.present? %>
-          <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+          <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-3">
             <div class="bg-blue-600 h-2 rounded-full transition-all duration-300"
                  data-countdown-timer-target="progressBar"
                  style="width: <%= timer.progress_percentage %>%"></div>
@@ -25,11 +25,11 @@
         <% end %>
         <div class="flex items-center space-x-3">
           <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
-            <%= timer.running? ? 'bg-green-100 text-green-800' : (timer.expired? ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800') %>">
+            <%= timer.running? ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400' : (timer.expired? ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400' : 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-400') %>">
             <%= icon(timer.running? ? :play : (timer.expired? ? :exclamation : :pause), size: 3, class: "mr-1") %>
             <%= timer.expired? ? 'Expired' : timer.status.capitalize %>
           </span>
-          <span class="text-sm text-gray-500">
+          <span class="text-sm text-gray-500 dark:text-gray-400">
             <% if timer.countdown? %>
               <%= timer.expired? ? 'Expired' : "#{timer.calculate_remaining_time / 60} minutes remaining" %>
             <% else %>
@@ -40,16 +40,16 @@
         <% if timer.parse_tags.any? %>
           <div class="flex flex-wrap gap-1 mt-2">
             <% timer.parse_tags.each do |tag| %>
-              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
                 <%= tag %>
               </span>
             <% end %>
           </div>
         <% end %>
         <% if timer.notes.present? %>
-          <div class="mt-3 bg-gray-50 rounded-lg p-2 border border-gray-200">
-            <p class="text-xs text-gray-600 mb-1 font-medium">Notes:</p>
-            <p class="text-sm text-gray-800 line-clamp-2"><%= truncate(timer.notes, length: 100) %></p>
+          <div class="mt-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg p-2 border border-gray-200 dark:border-gray-700">
+            <p class="text-xs text-gray-600 dark:text-gray-400 mb-1 font-medium">Notes:</p>
+            <p class="text-sm text-gray-800 dark:text-gray-200 line-clamp-2"><%= truncate(timer.notes, length: 100) %></p>
           </div>
         <% end %>
       </div>
